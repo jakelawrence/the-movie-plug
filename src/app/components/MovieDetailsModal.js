@@ -17,11 +17,11 @@ export function MovieDetailsModal({ movie, onClose, onToggleSave, isSaved, canSa
         onClick={onClose}
       >
         <div
-          className="bg-background w-full sm:max-w-lg sm:mx-4 max-h-[88vh] overflow-y-auto border-t sm:border border-fadedBlack/10 animate-slide-up"
+          className="bg-background w-full sm:max-w-lg sm:mx-4 max-h-[88dvh] flex flex-col border-t sm:border border-fadedBlack/10 animate-slide-up"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Sticky header */}
-          <div className="sticky top-0 bg-background border-b border-fadedBlack/10 px-6 py-4 flex items-center justify-between z-10">
+          {/* Fixed header — always on-screen, never scrolls away */}
+          <div className="flex-shrink-0 bg-background border-b border-fadedBlack/10 px-6 py-4 flex items-center justify-between">
             <p className="font-dmSans text-[9px] uppercase tracking-[0.25em] opacity-40">About This Film</p>
             <button
               onClick={onClose}
@@ -32,7 +32,7 @@ export function MovieDetailsModal({ movie, onClose, onToggleSave, isSaved, canSa
             </button>
           </div>
 
-          <div className="px-6 py-7 space-y-6">
+          <div className="flex-1 min-h-0 overflow-y-auto px-6 pt-7 pb-[calc(1.75rem+env(safe-area-inset-bottom))] space-y-6">
             {/* Title + tagline */}
             <div>
               <h2 className="font-dmSerifDisplay text-2xl sm:text-3xl text-fadedBlack leading-tight">
