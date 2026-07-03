@@ -132,7 +132,7 @@ export const SearchBar = ({ disabled }) => {
           aria-expanded={showDropdown && searchResults.length > 0}
           aria-autocomplete="list"
           aria-describedby={searchError ? `${inputId}-error` : undefined}
-          className={`w-full px-4 sm:px-6 py-3 sm:py-4 border-2 border-fadedBlack/30 bg-background text-fadedBlack placeholder-fadedBlack/40 font-bold text-base sm:text-lg outline-none focus:border-fadedBlack/60 transition-all ${
+          className={`w-full px-4 sm:px-6 py-3 sm:py-4 border-2 border-fadedBlack/30 bg-background text-fadedBlack placeholder-fadedBlack/65 font-bold text-base sm:text-lg outline-none focus:border-fadedBlack/60 transition-all ${
             disabled ? "opacity-50 pointer-events-none" : ""
           }`}
         />
@@ -194,8 +194,8 @@ export const SearchBar = ({ disabled }) => {
               </div>
 
               <div className="flex-1">
-                <div className="font-black text-fadedBlack text-lg">{movie.title}</div>
-                <div className="text-sm text-fadedBlack font-bold">{movie.year}</div>
+                <div className="font-dmSerifDisplay text-fadedBlack text-lg leading-tight">{movie.title}</div>
+                <div className="font-dmSans text-sm text-fadedBlack/70 mt-0.5 tabular-nums">{movie.year}</div>
 
                 {/* Optional: Show search score for debugging */}
                 {movie.matchScore && process.env.NODE_ENV === "development" && (
@@ -210,8 +210,8 @@ export const SearchBar = ({ disabled }) => {
       {/* No results message */}
       {showDropdown && !isSearching && searchResults.length === 0 && debouncedSearchQuery && (
         <div className="absolute top-full left-0 w-full mt-2 p-4 bg-background border border-fadedBlack/20" aria-live="polite">
-          <p className="text-fadedBlack font-bold">No movies found for "{debouncedSearchQuery}"</p>
-          <p className="text-sm text-fadedBlack/60 mt-1">Try checking your spelling or using different keywords</p>
+          <p className="font-dmSans text-fadedBlack">No movies found for "{debouncedSearchQuery}"</p>
+          <p className="text-sm text-fadedBlack/70 mt-1">Try checking your spelling or using different keywords</p>
         </div>
       )}
 
@@ -219,7 +219,7 @@ export const SearchBar = ({ disabled }) => {
       {searchError && (
         <div
           id={`${inputId}-error`}
-          className="absolute top-full left-0 w-full mt-2 p-2 bg-background border border-fadedBlack/20 text-fadedBlack font-bold text-sm"
+          className="absolute top-full left-0 w-full mt-2 p-2 bg-background border border-fadedBlack/20 font-dmSans text-fadedBlack text-sm"
           role="alert"
         >
           {searchError}

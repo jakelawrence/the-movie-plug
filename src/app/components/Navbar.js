@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../hooks/useAuth";
 import Image from "next/image";
@@ -16,16 +16,6 @@ export function Navbar({ isLoaded, currentPage }) {
     if (user.username) return user.username[0].toUpperCase();
     return user.email ? user.email[0].toUpperCase() : "U";
   };
-
-  const AVATAR_COLORS = ["#4f6f8a", "#5b7c66", "#b25b5b", "#d7c7a3", "#1f1b17"];
-  const avatarColor = useMemo(() => {
-    if (!user?.email) return "#1f1b17";
-    let hash = 0;
-    for (let i = 0; i < user.email.length; i++) {
-      hash = user.email.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-  }, [user?.email]);
 
   return (
     <>
@@ -94,10 +84,7 @@ export function Navbar({ isLoaded, currentPage }) {
               {isAuthenticated ? (
                 <div className="relative hidden md:block" ref={dropdownRef}>
                   <button onClick={() => router.push("/profile")} className="flex items-center gap-2.5 hover:opacity-70 transition-opacity">
-                    <div
-                      className="w-8 h-8 rounded-full border border-fadedBlack/25 flex items-center justify-center text-background font-black text-xs"
-                      style={{ backgroundColor: avatarColor }}
-                    >
+                    <div className="w-8 h-8 rounded-full bg-fadedBlack border border-fadedBlack/15 flex items-center justify-center text-background font-dmSerifDisplay text-xs">
                       {getInitials()}
                     </div>
                     <p className="font-dmSans font-normal text-sm text-fadedBlack hidden lg:block">
