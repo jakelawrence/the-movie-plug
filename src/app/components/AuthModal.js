@@ -157,7 +157,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
         aria-labelledby="auth-modal-title"
       >
         {/* Close button */}
-        <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-background transition-colors" aria-label="Close dialog">
+        <button onClick={onClose} className="absolute top-4 right-4 h-11 w-11 flex items-center justify-center hover:bg-background transition-colors" aria-label="Close dialog">
           <X size={20} strokeWidth={2} className="text-fadedBlack/50" />
         </button>
 

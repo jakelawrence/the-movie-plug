@@ -73,7 +73,7 @@ function VibeChip({ label, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 border font-dmSans text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
+      className={`px-3 py-2 border font-dmSans text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
         active ? "bg-fadedBlack text-background border-fadedBlack" : "bg-background text-fadedBlack/70 border-fadedBlack/15 hover:bg-backgroundSecondary"
       }`}
     >
@@ -91,7 +91,7 @@ function RatingStars({ min, setMin }) {
           <button
             key={i}
             onClick={() => setMin(min === val ? 0 : val)}
-            className="transition-opacity p-1"
+            className="relative transition-opacity p-1 before:absolute before:content-[''] before:-inset-y-2.5 before:inset-x-0"
             aria-label={`Filter by ${val}+ star${val !== 1 ? "s" : ""}`}
             aria-pressed={val <= min}
           >
@@ -371,7 +371,7 @@ export default function SavedMoviesPage() {
               {activeFilterCount > 0 && (
                 <button
                   onClick={clearAll}
-                  className="flex items-center gap-1 font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack/70 hover:text-fadedBlack transition-colors"
+                  className="flex items-center gap-1 py-2 -my-1 font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack/70 hover:text-fadedBlack transition-colors"
                 >
                   <X size={12} strokeWidth={2} /> Clear all filters
                 </button>
@@ -388,7 +388,7 @@ export default function SavedMoviesPage() {
                   <button
                     key={k}
                     onClick={() => toggleVibe(k)}
-                    className="flex items-center gap-1 bg-background text-fadedBlack border border-fadedBlack/15 px-2 py-1 font-dmSans text-[10px] uppercase tracking-[0.1em] hover:bg-backgroundSecondary transition-colors"
+                    className="flex items-center gap-1 bg-background text-fadedBlack border border-fadedBlack/15 px-2.5 py-1.5 font-dmSans text-[10px] uppercase tracking-[0.1em] hover:bg-backgroundSecondary transition-colors"
                   >
                     {v?.label} <X size={10} strokeWidth={3} />
                   </button>
@@ -398,7 +398,7 @@ export default function SavedMoviesPage() {
                 <button
                   key={g}
                   onClick={() => toggleGenre(g)}
-                  className="flex items-center gap-1 bg-background text-fadedBlack border border-fadedBlack/20 px-2 py-1 font-dmSans text-[10px] uppercase tracking-[0.1em] hover:bg-backgroundSecondary transition-colors"
+                  className="flex items-center gap-1 bg-background text-fadedBlack border border-fadedBlack/20 px-2.5 py-1.5 font-dmSans text-[10px] uppercase tracking-[0.1em] hover:bg-backgroundSecondary transition-colors"
                 >
                   {g} <X size={10} strokeWidth={3} />
                 </button>
@@ -406,7 +406,7 @@ export default function SavedMoviesPage() {
               {ratingMin > 0 && (
                 <button
                   onClick={() => setRatingMin(0)}
-                  className="flex items-center gap-1 bg-background text-fadedBlack border border-fadedBlack/20 px-2 py-1 font-dmSans text-[10px] uppercase tracking-[0.1em] hover:bg-backgroundSecondary transition-colors"
+                  className="flex items-center gap-1 bg-background text-fadedBlack border border-fadedBlack/20 px-2.5 py-1.5 font-dmSans text-[10px] uppercase tracking-[0.1em] hover:bg-backgroundSecondary transition-colors"
                 >
                   ★ {ratingMin}+ <X size={10} strokeWidth={3} />
                 </button>

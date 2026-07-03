@@ -207,7 +207,7 @@ function MoviePill({ movie, onRemove, variant = "input" }) {
       </div>
       <button
         onClick={() => onRemove(movie.slug)}
-        className="flex-shrink-0 p-1 text-fadedBlack/70 hover:text-fadedBlack hover:bg-fadedBlack/5 transition-colors"
+        className="relative flex-shrink-0 p-1 text-fadedBlack/70 hover:text-fadedBlack hover:bg-fadedBlack/5 transition-colors before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-1.5"
         aria-label={`Remove ${movie.title}`}
       >
         <X size={14} strokeWidth={2} />
@@ -226,7 +226,7 @@ function Chip({ label, active, onClick, disabled = false }) {
       aria-pressed={active}
       disabled={disabled}
       aria-disabled={disabled}
-      className={`px-3 py-1.5 border font-dmSans text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
+      className={`px-3 py-2 border font-dmSans text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
         disabled
           ? "bg-fadedBlack/5 text-fadedBlack/30 border-fadedBlack/15 cursor-not-allowed"
           : active
@@ -677,7 +677,7 @@ export default function SearchPage() {
         {activeGenres.length > 0 && (
           <button
             onClick={() => setActiveGenres([])}
-            className="mt-3 font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack/70 hover:text-fadedBlack flex items-center gap-1"
+            className="mt-3 font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack/70 hover:text-fadedBlack flex items-center gap-1 py-2 -my-1"
           >
             <X size={10} strokeWidth={2} /> Clear genres
           </button>
@@ -725,7 +725,7 @@ export default function SearchPage() {
       <FilterSection title="Minimum Rating" defaultOpen={false} count={minRating > 0 ? 1 : 0}>
         <div className="flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((val) => (
-            <button key={val} onClick={() => setMinRating(minRating === val ? 0 : val)} className="transition-opacity p-0.5" title={`${val}+ stars`}>
+            <button key={val} onClick={() => setMinRating(minRating === val ? 0 : val)} className="relative transition-opacity p-0.5 before:absolute before:content-[''] before:-inset-y-3 before:inset-x-0" title={`${val}+ stars`}>
               <Star size={20} strokeWidth={2} className={val <= minRating ? "fill-fadedBlack text-fadedBlack" : "text-fadedBlack opacity-20"} />
             </button>
           ))}
