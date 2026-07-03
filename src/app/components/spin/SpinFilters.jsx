@@ -11,7 +11,7 @@ function Chip({ label, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 border font-dmSans text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
+      className={`px-3 py-2 border font-dmSans text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
         active ? "bg-fadedBlack text-background border-fadedBlack" : "bg-background text-fadedBlack/70 border-fadedBlack/15 hover:bg-backgroundSecondary"
       }`}
     >
@@ -29,7 +29,7 @@ function RatingStars({ min, setMin }) {
           <button
             key={i}
             onClick={() => setMin(min === val ? 0 : val)}
-            className="transition-opacity p-1"
+            className="relative transition-opacity p-1 before:absolute before:content-[''] before:-inset-y-2.5 before:inset-x-0"
             aria-label={`Filter by ${val}+ star${val !== 1 ? "s" : ""}`}
             aria-pressed={val <= min}
           >
@@ -90,7 +90,7 @@ export function SpinFilters({ genres, filters, onToggleGenre, onToggleVibe, onTo
       {activeCount > 0 && (
         <button
           onClick={onClear}
-          className="flex items-center gap-1 font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack/70 hover:text-fadedBlack transition-colors"
+          className="flex items-center gap-1 py-2 -my-1 font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack/70 hover:text-fadedBlack transition-colors"
         >
           <X size={12} strokeWidth={2} /> Clear all filters
         </button>
