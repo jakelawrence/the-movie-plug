@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Heart, ThumbsUp, Trash2, Star, Clock, Calendar, ChevronUp, ChevronDown, X, SlidersHorizontal } from "lucide-react";
+import { Heart, ThumbsUp, Trash2, Star, Clock, Calendar, ChevronUp, ChevronDown, ChevronRight, X, SlidersHorizontal } from "lucide-react";
 import { Navbar } from "../../components/Navbar";
 import Loading from "../../components/Loading";
 import { MovieDetailsModal } from "@/app/components/MovieDetailsModal";
@@ -127,6 +127,9 @@ function MovieCard({ movie, onSelect, onRemove }) {
             {movie.year && <span>{movie.year}</span>}
             {movie.duration && <span>{movie.duration}m</span>}
           </div>
+          <p className="hidden [@media(hover:none)]:flex items-center gap-1 font-dmSans text-[9px] uppercase tracking-[0.18em] text-background/70 mt-2">
+            Tap again for details <ChevronRight size={11} strokeWidth={2} />
+          </p>
         </div>
       </button>
 
