@@ -38,7 +38,7 @@ export default function HowToUsePopup({ open, onClose }) {
       >
         <button
           onClick={close}
-          className="absolute top-0 right-0 bg-background border-b border-l border-fadedBlack/15 p-2 hover:bg-backgroundSecondary transition-colors"
+          className="absolute top-0 right-0 bg-background border-b border-l border-fadedBlack/15 h-11 w-11 flex items-center justify-center hover:bg-backgroundSecondary transition-colors"
           aria-label="Close"
         >
           <X className="text-fadedBlack/50" size={18} strokeWidth={2} />

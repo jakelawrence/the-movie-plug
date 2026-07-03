@@ -25,7 +25,7 @@ export function MovieDetailsModal({ movie, onClose, onToggleSave, isSaved, canSa
             <p className="font-dmSans text-[9px] uppercase tracking-[0.25em] opacity-40">About This Film</p>
             <button
               onClick={onClose}
-              className="text-fadedBlack/30 hover:text-fadedBlack transition-colors p-1"
+              className="relative text-fadedBlack/30 hover:text-fadedBlack transition-colors p-1 before:absolute before:content-[''] before:-inset-3"
               aria-label="Close"
             >
               <X size={18} strokeWidth={1.5} />
