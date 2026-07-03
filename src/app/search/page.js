@@ -627,24 +627,56 @@ export default function SearchPage() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
+  // The primary movie search — the one obvious action. On mobile it is lifted
+  // out of the collapsible filters (rendered above the toggle); on desktop it
+  // stays at the top of the always-visible left panel.
+  const primarySearch = (
+    <div className="flex flex-col gap-3">
+      <MovieSearchInput placeholder="Search for a movie you love…" onSelect={addInputMovie} excludeSlugs={allExcludeSlugs} accentColor="yellow" />
+      {inputMovies.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-1">
+          {inputMovies.map((m) => (
+            <MoviePill key={m.slug} movie={m} onRemove={removeInputMovie} variant="input" />
+          ))}
+        </div>
+      )}
+      {inputMovies.length === 0 && (
+        <p className="font-dmSans text-fadedBlack/70 text-xs leading-relaxed">Add up to 5 movies to anchor your search</p>
+      )}
+    </div>
+  );
+
+  const searchButton = (
+    <button
+      onClick={handleSearch}
+      disabled={inputMovies.length === 0 || isSearching}
+      type="button"
+      className={`w-full py-4 font-dmSans text-[10px] uppercase tracking-[0.12em] border flex items-center justify-center gap-2 transition-colors duration-150 ${
+        inputMovies.length === 0
+          ? "bg-fadedBlack/5 text-fadedBlack/40 border-fadedBlack/15 cursor-not-allowed"
+          : "bg-fadedBlack text-background border-fadedBlack hover:bg-fadedBlue hover:border-fadedBlue"
+      }`}
+    >
+      {isSearching ? (
+        <>
+          <Loader2 size={15} strokeWidth={2} className="animate-spin" /> Searching…
+        </>
+      ) : (
+        <>
+          <Search size={15} strokeWidth={2} /> Find Movies
+        </>
+      )}
+    </button>
+  );
+
   const leftPanel = (
     <div className="flex flex-col gap-4">
-      {/* ── INPUT MOVIES ── */}
-      <FilterSection title="Based on these movies" defaultOpen={true}>
-        <div className="flex flex-col gap-3 pt-2">
-          <MovieSearchInput placeholder="Search for a movie you love…" onSelect={addInputMovie} excludeSlugs={allExcludeSlugs} accentColor="yellow" />
-          {inputMovies.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-1">
-              {inputMovies.map((m) => (
-                <MoviePill key={m.slug} movie={m} onRemove={removeInputMovie} variant="input" />
-              ))}
-            </div>
-          )}
-          {inputMovies.length === 0 && (
-            <p className="font-dmSans text-fadedBlack/70 text-xs leading-relaxed">Add up to 5 movies to anchor your search</p>
-          )}
-        </div>
-      </FilterSection>
+      {/* ── INPUT MOVIES (desktop; on mobile this lives above the filter toggle) ── */}
+      <div className="hidden lg:block">
+        <FilterSection title="Based on these movies" defaultOpen={true}>
+          <div className="pt-2">{primarySearch}</div>
+        </FilterSection>
+      </div>
 
       {/* ── EXCLUDE MOVIES ── */}
       <FilterSection title="Exclude these movies" defaultOpen={false}>
@@ -755,27 +787,8 @@ export default function SearchPage() {
         {!user?.username && <p className="mt-2 text-fadedBlack/70 text-xs font-bold">Sign in to use your saved services.</p>}
       </div>
 
-      {/* ── SEARCH BUTTON ── */}
-      <button
-        onClick={handleSearch}
-        disabled={inputMovies.length === 0 || isSearching}
-        type="button"
-        className={`w-full py-4 font-dmSans text-[10px] uppercase tracking-[0.12em] border flex items-center justify-center gap-2 transition-colors duration-150 ${
-          inputMovies.length === 0
-            ? "bg-fadedBlack/5 text-fadedBlack/40 border-fadedBlack/15 cursor-not-allowed"
-            : "bg-fadedBlack text-background border-fadedBlack hover:bg-fadedBlue hover:border-fadedBlue"
-        }`}
-      >
-        {isSearching ? (
-          <>
-            <Loader2 size={15} strokeWidth={2} className="animate-spin" /> Searching…
-          </>
-        ) : (
-          <>
-            <Search size={15} strokeWidth={2} /> Find Movies
-          </>
-        )}
-      </button>
+      {/* ── SEARCH BUTTON (desktop; mobile renders it above with the search) ── */}
+      <div className="hidden lg:block">{searchButton}</div>
     </div>
   );
 
@@ -857,10 +870,17 @@ export default function SearchPage() {
 
       <div className={`flex-1 transition-all duration-700 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
         {/* Page header */}
-        <div className="px-4 md:px-8 pt-12 pb-8">
+        <div className="px-4 md:px-8 pt-12 pb-6 md:pb-8">
           <div className={`transition-all duration-700 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
             <h1 className="font-dmSerifDisplay text-fadedBlack text-4xl sm:text-5xl leading-[0.95]">find your next film</h1>
           </div>
+        </div>
+
+        {/* Mobile: primary movie search — always visible, the obvious first action */}
+        <div className="lg:hidden px-4 mb-6">
+          <p className="font-dmSans text-[9px] uppercase tracking-[0.22em] text-fadedBlack/70 mb-2.5">Start with a film you love</p>
+          {primarySearch}
+          <div className="mt-4">{searchButton}</div>
         </div>
 
         {/* Mobile: filter toggle bar */}
