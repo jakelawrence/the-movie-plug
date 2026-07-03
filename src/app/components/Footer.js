@@ -38,7 +38,7 @@ export default function Footer() {
       <div className="grid grid-cols-1 md:grid-cols-2 border-b border-fadedBlack/10">
         {/* Col 1 — Navigation */}
         <div className="border-b md:border-b-0 md:border-r border-fadedBlack/10 p-8">
-          <p className="text-fadedBlack text-xs font-black uppercase tracking-widest mb-6 opacity-50">site map</p>
+          <p className="font-dmSans text-fadedBlack/70 text-[9px] uppercase tracking-[0.22em] mb-6">site map</p>
           <ul className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <li key={link.label}>
@@ -50,15 +50,15 @@ export default function Footer() {
                 >
                   {/* Arrow indicator */}
                   <span
-                    className={`text-fadedBlack font-black text-sm transition-all duration-150 ${
+                    className={`text-fadedBlack text-sm transition-all duration-150 ${
                       hoveredLink === link.label ? "opacity-100 translate-x-1" : "opacity-0 -translate-x-1"
                     }`}
                   >
                     →
                   </span>
                   <span
-                    className={`font-dmSans font-black text-xs uppercase tracking-[0.15em] transition-colors duration-150 ${
-                      hoveredLink === link.label ? "text-fadedBlue" : "text-fadedBlack"
+                    className={`font-dmSans text-xs uppercase tracking-[0.15em] transition-colors duration-150 ${
+                      hoveredLink === link.label ? "text-fadedBlue" : "text-fadedBlack/70"
                     }`}
                   >
                     {link.label}
@@ -73,11 +73,11 @@ export default function Footer() {
         <div className="p-8 flex flex-col justify-between gap-8">
           {/* CTA block */}
           <div>
-            <p className="text-fadedBlack text-xs font-black uppercase tracking-widest mb-4 opacity-50">Get Started</p>
-            <p className="font-dmSans font-black text-base uppercase leading-snug mb-6">Find something to watch tonight.</p>
+            <p className="font-dmSans text-fadedBlack/70 text-[9px] uppercase tracking-[0.22em] mb-4">Get Started</p>
+            <p className="font-dmSerifDisplay text-fadedBlack text-2xl leading-snug mb-6">Find something to watch tonight.</p>
             <button
               onClick={() => router.push("/search")}
-              className="w-full bg-fadedBlack text-background border-2 border-fadedBlack py-3 px-6 font-black text-sm uppercase tracking-widest hover:bg-fadedBlue hover:border-fadedBlue transition-colors duration-150"
+              className="w-full bg-fadedBlack text-background border border-fadedBlack py-3.5 px-6 font-dmSans text-[10px] uppercase tracking-[0.12em] hover:bg-fadedBlue hover:border-fadedBlue transition-colors duration-150"
             >
               Start Exploring →
             </button>
@@ -87,14 +87,14 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-8 py-4 gap-2">
-        <p className="text-fadedBlack text-xs font-bold opacity-30 uppercase tracking-widest">© {new Date().getFullYear()} you should watch.</p>
-        <p className="text-fadedBlack text-xs font-bold opacity-30 uppercase tracking-widest">All rights reserved.</p>
+        <p className="font-dmSans text-fadedBlack/70 text-[10px] uppercase tracking-[0.18em]">© {new Date().getFullYear()} you should watch.</p>
+        <p className="font-dmSans text-fadedBlack/70 text-[10px] uppercase tracking-[0.18em]">All rights reserved.</p>
         <div className="flex gap-6">
           {["Privacy Policy", "Terms of Use"].map((item) => (
             <Link
               key={item}
               href="#"
-              className="text-fadedBlack text-xs font-bold opacity-30 uppercase tracking-widest hover:opacity-100 hover:text-fadedBlue transition-all duration-150"
+              className="font-dmSans text-fadedBlack/70 text-[10px] uppercase tracking-[0.18em] hover:text-fadedBlue transition-colors duration-150"
             >
               {item}
             </Link>

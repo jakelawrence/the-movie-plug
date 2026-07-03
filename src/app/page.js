@@ -34,7 +34,7 @@ export default function HomePage() {
                 {["you", "should", "watch"].map((word, i) => (
                   <p
                     key={word}
-                    className="font-dmSerifDisplay text-[3.5rem] sm:text-[6rem] md:text-[8rem] lg:text-[8rem]"
+                    className="font-dmSerifDisplay text-[3.5rem] sm:text-[5rem] md:text-[6rem] lg:text-[6rem]"
                     style={{ marginTop: i === 0 ? 0 : "-0.05em" }}
                   >
                     {word}
@@ -45,7 +45,7 @@ export default function HomePage() {
 
             {/* Subline */}
             <div className="mt-6 sm:mt-8 pl-6 sm:pl-12">
-              <p className="font-dmSans font-light text-sm sm:text-base text-fadedBlack/50 max-w-xs sm:max-w-sm">
+              <p className="font-dmSans font-light text-sm sm:text-base text-fadedBlack/70 max-w-xs sm:max-w-sm">
                 Pick a film you love. We&apos;ll find your next watch.
               </p>
             </div>
@@ -81,7 +81,7 @@ export default function HomePage() {
         }`}
         style={{ transitionDelay: "300ms" }}
       >
-        <p className="font-bigShouldersDisplay font-black text-2xl sm:text-3xl lg:text-5xl uppercase tracking-wide mb-8 sm:mb-10">
+        <p className="font-bigShouldersDisplay text-xl sm:text-2xl lg:text-3xl uppercase tracking-[0.06em] text-fadedBlack mb-8 sm:mb-10">
           Find a Film
         </p>
         <div className="w-full flex justify-center mb-5">

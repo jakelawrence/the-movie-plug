@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-25T00:00:00.000Z",
+  "title": "Design System: You Should Watch",
+  "extensions": {
+    "colorMeta": {
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#1f1b17", "tonalRamp": ["#100e0c", "#1f1b17", "#322c25", "#4a4137", "#6b5f50", "#94887a", "#bcb2a5", "#e6ddd2"] },
+      "paper": { "role": "neutral", "displayName": "Paper", "canonical": "#f6f1ea", "tonalRamp": ["#2c2924", "#4a453d", "#6d665b", "#938b7d", "#bcb3a4", "#d9d0c2", "#efe7dd", "#f6f1ea"] },
+      "paper-secondary": { "role": "neutral", "displayName": "Paper Secondary", "canonical": "#efe7dd", "tonalRamp": ["#29251f", "#454035", "#67604f", "#8d8470", "#b6ac96", "#d4cab6", "#e3dacc", "#efe7dd"] },
+      "ink-secondary": { "role": "neutral", "displayName": "Ink Secondary", "canonical": "#5f574f", "tonalRamp": ["#181512", "#2c2823", "#433d36", "#5f574f", "#7e756a", "#a39a8d", "#c7bfb4", "#e7e1d8"] },
+      "dusk-slate-blue": { "role": "primary", "displayName": "Dusk Slate Blue", "canonical": "#4f6f8a", "tonalRamp": ["#16202a", "#243646", "#344e64", "#4f6f8a", "#6c879c", "#8ba2b3", "#b0c0cc", "#d7e0e8"] },
+      "dusk-slate-blue-light": { "role": "primary", "displayName": "Dusk Slate Blue Light", "canonical": "#6c879c", "tonalRamp": ["#1e2832", "#30404e", "#445a6c", "#5a7488", "#6c879c", "#8ea4b4", "#b4c4ce", "#dbe3e9"] },
+      "programme-gold": { "role": "secondary", "displayName": "Programme Gold", "canonical": "#d7c7a3", "tonalRamp": ["#33291a", "#52432c", "#766240", "#9c8459", "#bfa67a", "#d7c7a3", "#e6dac0", "#f3ecdd"] },
+      "pine-success": { "role": "tertiary", "displayName": "Pine Success", "canonical": "#5b7c66", "tonalRamp": ["#17211a", "#26362b", "#37503f", "#496857", "#5b7c66", "#7d9c87", "#a8bfaf", "#d6e2da"] },
+      "clay-danger": { "role": "tertiary", "displayName": "Clay Danger", "canonical": "#a04848", "tonalRamp": ["#2e1414", "#4c2020", "#6e2f2f", "#914242", "#a04848", "#c87e7e", "#dca8a8", "#f0d6d6"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Film titles and the 'you should watch' wordmark. DM Serif Display — the literary anchor of a screen." },
+      "headline": { "displayName": "Headline", "purpose": "Scenario labels and section headers. Big Shoulders Display, condensed uppercase — the programme-heading voice." },
+      "title": { "displayName": "Title", "purpose": "Smaller serif moments: wordmark, list titles." },
+      "body": { "displayName": "Body", "purpose": "All prose and descriptions in DM Sans. Bold weight reserved for discrete data values." },
+      "label": { "displayName": "Label / Micro-Caption", "purpose": "The signature ~9px uppercase tracked, dimmed field caption ('About This Film', 'Year', 'Tone & Mood')." }
+    },
+    "shadows": [
+      { "name": "overlay-scrim", "value": "background: rgba(31,27,23,0.5); backdrop-filter: blur(4px)", "purpose": "Dimming scrim behind modals; the only routine blur besides the translucent navbar." },
+      { "name": "hover-lift", "value": "0 4px 6px rgba(0,0,0,0.10)", "purpose": "Optional subtle lift on hoverable cards; most cards prefer the ink/paper color-invert instead." }
+    ],
+    "motion": [
+      { "name": "state-fast", "value": "200ms", "purpose": "Default color/state transition on buttons, cards, links." },
+      { "name": "reveal-slow", "value": "700ms", "purpose": "Section load-in (opacity + translate-y) on scenario grids." },
+      { "name": "drawer", "value": "300ms", "purpose": "Mobile nav drawer slide and scrim fade." },
+      { "name": "marquee", "value": "18s linear infinite", "purpose": "Footer marquee scroll." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ink-filled square action button; inverts to paper on hover (the house feedback gesture).",
+      "html": "<button class=\"ds-btn-primary\">Get suggestions</button>",
+      "css": ".ds-btn-primary { background: #1f1b17; color: #f6f1ea; border: 1px solid #1f1b17; padding: 14px 24px; font-family: 'DM Sans', 'Avenir Next', sans-serif; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; cursor: pointer; transition: background 0.2s, color 0.2s; } .ds-btn-primary:hover { background: #f6f1ea; color: #1f1b17; } .ds-btn-primary:focus-visible { outline: 2px solid #4f6f8a; outline-offset: 2px; }"
+    },
+    {
+      "name": "Action Button (accent hover)",
+      "kind": "button",
+      "refersTo": "button-primary-hover-action",
+      "description": "Primary button variant that hovers to Dusk Slate Blue rather than inverting; for forward/commit actions.",
+      "html": "<button class=\"ds-btn-action\">Save film</button>",
+      "css": ".ds-btn-action { background: #1f1b17; color: #f6f1ea; border: 1px solid #1f1b17; padding: 14px 24px; font-family: 'DM Sans', 'Avenir Next', sans-serif; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; cursor: pointer; transition: background 0.2s, border-color 0.2s; } .ds-btn-action:hover { background: #4f6f8a; border-color: #4f6f8a; } .ds-btn-action:focus-visible { outline: 2px solid #4f6f8a; outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "Square paper field with a 2px hairline ink border that deepens on focus; no glow.",
+      "html": "<input class=\"ds-input-search\" type=\"text\" placeholder=\"Search a film you love\" />",
+      "css": ".ds-input-search { width: 100%; background: #f6f1ea; color: #1f1b17; border: 2px solid rgba(31,27,23,0.30); padding: 16px 24px; font-family: 'DM Sans', 'Avenir Next', sans-serif; font-weight: 700; font-size: 1.125rem; outline: none; transition: border-color 0.2s; } .ds-input-search::placeholder { color: rgba(31,27,23,0.40); } .ds-input-search:focus { border-color: rgba(31,27,23,0.60); }"
+    },
+    {
+      "name": "Scenario Card",
+      "kind": "card",
+      "refersTo": "card-scenario",
+      "description": "Flat paper card, hairline border, that fully inverts to ink-on-paper on hover. Icon + condensed uppercase label + dimmed description.",
+      "html": "<button class=\"ds-card-scenario\"><svg class=\"ds-card-scenario__icon\" width=\"36\" height=\"36\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m21 21-4.34-4.34\"/><circle cx=\"11\" cy=\"11\" r=\"8\"/></svg><h3 class=\"ds-card-scenario__label\">Find Similar</h3><p class=\"ds-card-scenario__desc\">Recommendations from one film you love</p></button>",
+      "css": ".ds-card-scenario { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; width: 100%; min-height: 140px; padding: 20px; text-align: left; background: #f6f1ea; color: #1f1b17; border: 1px solid rgba(31,27,23,0.10); cursor: pointer; transition: background 0.2s, color 0.2s; } .ds-card-scenario:hover { background: #1f1b17; color: #f6f1ea; } .ds-card-scenario:hover .ds-card-scenario__desc { color: rgba(246,241,234,0.70); } .ds-card-scenario__icon { color: inherit; } .ds-card-scenario__label { font-family: 'Big Shoulders Display', Impact, sans-serif; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.03em; line-height: 1.1; margin: 0; } .ds-card-scenario__desc { font-family: 'DM Sans', sans-serif; font-size: 0.75rem; opacity: 0.70; margin: 0; transition: color 0.2s; }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "chip-filter",
+      "description": "Square paper-secondary chip with a hairline border; negative/exclude variant tints to Clay Danger.",
+      "html": "<span class=\"ds-chip\">Slow burn</span><span class=\"ds-chip ds-chip--exclude\">Not horror</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; background: #efe7dd; color: #1f1b17; border: 1px solid rgba(31,27,23,0.20); padding: 8px 12px; font-family: 'DM Sans', sans-serif; font-size: 0.8125rem; font-weight: 700; } .ds-chip--exclude { background: rgba(178,91,91,0.10); border-color: rgba(178,91,91,0.30); color: #8a3f3f; }"
+    },
+    {
+      "name": "Micro-Caption Label",
+      "kind": "custom",
+      "refersTo": "label",
+      "description": "The signature dimmed, tracked, uppercase field caption used throughout detail views.",
+      "html": "<p class=\"ds-microcap\">About This Film</p>",
+      "css": ".ds-microcap { font-family: 'DM Sans', sans-serif; font-size: 9px; text-transform: uppercase; letter-spacing: 0.22em; opacity: 0.70; margin: 0; color: #1f1b17; }"
+    },
+    {
+      "name": "Top Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Sticky translucent paper bar with backdrop blur and a hairline bottom border. Serif wordmark, low-weight tracked links that fade on hover.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-nav__brand\">you should watch</span><div class=\"ds-nav__links\"><a class=\"ds-nav__link\" href=\"#\">Scenarios</a><a class=\"ds-nav__link ds-nav__link--active\" href=\"#\">Spin</a><a class=\"ds-nav__link\" href=\"#\">Profile</a></div></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 24px; background: rgba(246,241,234,0.90); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(31,27,23,0.10); } .ds-nav__brand { font-family: 'DM Serif Display', Georgia, serif; font-weight: 800; font-size: 1.125rem; color: #1f1b17; } .ds-nav__links { display: flex; gap: 32px; } .ds-nav__link { font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 0.875rem; letter-spacing: 0.02em; color: #1f1b17; text-decoration: none; transition: opacity 0.2s, color 0.2s; } .ds-nav__link:hover { opacity: 0.4; } .ds-nav__link--active { color: #4f6f8a; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Repertory Programme",
+    "overview": "This is the printed programme of a repertory cinema — the folded A24-zine handout you pick up in the lobby. Ink on warm paper. Big serif titles, hand-set micro-captions, generous margins, and not one decorative flourish that isn't carrying information. The interface behaves like an editor who already saw everything and is quietly pressing one film into your hands. It does not shout, does not merchandise, does not present a wall of choice. It presents a choice. Density is low and deliberate; whitespace is the primary structural material; type scale and weight carry the hierarchy, never borders or fills. Color lives almost entirely in the movie posters — the UI stays a near-neutral ink-and-cream so poster art is the only thing on screen allowed to be loud. The single dusk-blue accent appears only on the things you can act on. The whole surface is flat at rest; depth is a response to interaction, not a default coat of shadow.",
+    "keyCharacteristics": [
+      "Ink-on-cream editorial palette; posters supply all the real color.",
+      "Sharp, square corners as the rule; pills and avatars fully round as the one exception.",
+      "Hairline, low-opacity borders (ink at 10–30%), never solid decorative strokes.",
+      "Tiny uppercase tracked micro-labels (DM Sans, ~9px, 0.22em) as the signature caption voice.",
+      "Flat by default; hover inverts ink/paper rather than lifting with shadow.",
+      "One muted accent, reserved strictly for action and active state."
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "Dusk Slate Blue is the only accent and appears on ≤10% of any screen. If two things on a screen are blue, one of them is wrong.", "section": "colors" },
+      { "name": "The Posters Are The Palette Rule", "body": "Saturated color belongs to movie art, never to UI. If a UI element needs color to feel finished, it's over-designed — reduce it instead.", "section": "colors" },
+      { "name": "The Ghost Border Rule", "body": "Borders are ink at 10–30% opacity, hairline weight. A solid full-strength #1f1b17 border (the legacy brutalist stroke) is forbidden on user-facing surfaces.", "section": "colors" },
+      { "name": "The Micro-Caption Rule", "body": "Field labels are tiny (≈9px), uppercase, widely tracked (0.18–0.25em), and set at ink/70 — the WCAG AA contrast floor on cream (≈4.5:1). They read as quiet through small size and wide tracking, never by dropping below the contrast floor.", "section": "typography" },
+      { "name": "The No-Bold-Body Rule", "body": "Never add weight to body copy for emphasis. Let the display serif and the condensed headline carry contrast. Weight on body text is reserved for discrete data values, not prose.", "section": "typography" },
+      { "name": "The Lowercase-Title Rule", "body": "Serif page and section titles are set entirely lowercase (\"choose your scenario\", not \"Choose Your Scenario\"), including empty- and error-state headings. Exceptions: film titles (proper nouns, never re-cased) and the \"you should watch\" wordmark. Big Shoulders programme labels stay uppercase — the opposing case is intended contrast.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. If a card needs a shadow to look finished while sitting still, the layout — not the shadow — is the problem.", "section": "elevation" },
+      { "name": "The Invert-Don't-Lift Rule", "body": "The primary hover affordance is a full ink↔paper color inversion, not a drop shadow. This is the house feedback gesture.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the UI near-neutral ink-on-cream so poster art is the only loud color on screen.",
+      "Do use square corners (radius 0) by default; reserve rounded-full for pills, avatars, and carousel dots.",
+      "Do draw borders as hairline ink at 10–30% opacity.",
+      "Do use the tiny uppercase tracked micro-caption (≈9px, 0.22em, dimmed) for every field label.",
+      "Do make hover a full ink↔paper inversion, not a drop shadow.",
+      "Do restrict Dusk Slate Blue (#4f6f8a) to action and active state — ≤10% of any screen.",
+      "Do verify body and placeholder text clears 4.5:1 against the #f6f1ea cream (WCAG 2.1 AA).",
+      "Do honor prefers-reduced-motion with a crossfade or instant fallback on every transition."
+    ],
+    "donts": [
+      "Don't use heavy black decorative borders or brutalist chrome — the legacy border-4 border-black admin style is debt, not the system.",
+      "Don't introduce neon, full-saturation scenario colors, or pastel Tailwind rainbow card grids.",
+      "Don't add border-left/border-right colored side-stripes, gradient text, or decorative glassmorphism.",
+      "Don't add weight to body copy for emphasis; let the serif and condensed headline carry contrast.",
+      "Don't reproduce infinite-scroll catalog or choice-overload grids — that's the exact problem this product solves.",
+      "Don't let the UI compete with poster art; if an element needs color to feel finished, reduce it.",
+      "Don't ship anything that reads as a generic SaaS web app: hero-metric templates, identical icon-heading-text card grids, or a tracked-uppercase eyebrow above every section."
+    ]
+  }
+}

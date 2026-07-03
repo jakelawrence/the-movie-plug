@@ -57,13 +57,13 @@ function SortButton({ label, active, direction, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-1 px-3 py-2 border-2 font-black text-xs uppercase tracking-wider transition-colors duration-100 ${
-        active ? "bg-fadedBlack text-background border-fadedBlack" : "bg-background text-fadedBlack border-fadedBlack/20 hover:bg-backgroundSecondary"
+      className={`flex items-center gap-1 px-3 py-2 border font-dmSans text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
+        active ? "bg-fadedBlack text-background border-fadedBlack" : "bg-background text-fadedBlack/70 border-fadedBlack/15 hover:bg-backgroundSecondary"
       }`}
     >
       {label}
       {active && (
-        <span className="ml-1">{direction === "asc" ? <ChevronUp size={14} strokeWidth={3} /> : <ChevronDown size={14} strokeWidth={3} />}</span>
+        <span className="ml-0.5">{direction === "asc" ? <ChevronUp size={13} strokeWidth={2} /> : <ChevronDown size={13} strokeWidth={2} />}</span>
       )}
     </button>
   );
@@ -73,8 +73,8 @@ function VibeChip({ label, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 border-2 font-black text-xs uppercase tracking-wider transition-colors duration-100 ${
-        active ? "bg-fadedBlack text-background border-fadedBlack" : "bg-background text-fadedBlack border-fadedBlack/20 hover:bg-backgroundSecondary"
+      className={`px-3 py-1.5 border font-dmSans text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
+        active ? "bg-fadedBlack text-background border-fadedBlack" : "bg-background text-fadedBlack/70 border-fadedBlack/15 hover:bg-backgroundSecondary"
       }`}
     >
       {label}
@@ -95,11 +95,11 @@ function RatingStars({ min, setMin }) {
             aria-label={`Filter by ${val}+ star${val !== 1 ? "s" : ""}`}
             aria-pressed={val <= min}
           >
-            <Star size={20} strokeWidth={2.5} className={val <= min ? "fill-fadedBlack text-fadedBlack" : "text-fadedBlack/30"} />
+            <Star size={18} strokeWidth={2} className={val <= min ? "fill-fadedBlack text-fadedBlack" : "text-fadedBlack/25"} />
           </button>
         );
       })}
-      {min > 0 && <span className="text-xs font-black text-fadedBlack/70 ml-1">{min}+ stars</span>}
+      {min > 0 && <span className="font-dmSans text-[10px] uppercase tracking-[0.1em] text-fadedBlack/70 ml-1.5">{min}+ stars</span>}
     </div>
   );
 }
@@ -121,11 +121,11 @@ function MovieCard({ movie, onSelect, onRemove }) {
         />
         {/* Hover overlay with quick stats */}
         <div className="absolute inset-0 bg-fadedBlack/75 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-2 p-4">
-          <p className="text-background font-black text-sm uppercase tracking-wide text-center">{movie.title}</p>
-          <div className="flex gap-3 mt-2">
-            {movie.averageRating && <span className="text-fadedGold font-black text-xs">★ {movie.averageRating.toFixed(1)}</span>}
-            {movie.year && <span className="text-background font-black text-xs">{movie.year}</span>}
-            {movie.duration && <span className="text-background font-black text-xs">{movie.duration}m</span>}
+          <p className="font-dmSerifDisplay text-background text-base text-center leading-tight">{movie.title}</p>
+          <div className="flex gap-3 mt-1 font-dmSans text-[11px] text-background/75 tabular-nums">
+            {movie.averageRating && <span>★ {movie.averageRating.toFixed(1)}</span>}
+            {movie.year && <span>{movie.year}</span>}
+            {movie.duration && <span>{movie.duration}m</span>}
           </div>
         </div>
       </button>
@@ -134,41 +134,31 @@ function MovieCard({ movie, onSelect, onRemove }) {
       <div className="p-4 flex flex-col gap-3 flex-1">
         {/* Title + year */}
         <div>
-          <p className="font-black text-fadedBlack text-sm uppercase leading-tight line-clamp-2">{movie.title}</p>
-          <p className="text-fadedBlack/60 text-xs font-bold mt-0.5">{movie.year}</p>
+          <p className="font-dmSerifDisplay text-fadedBlack text-base leading-tight line-clamp-2">{movie.title}</p>
+          <p className="font-dmSans text-fadedBlack/70 text-xs mt-1 tabular-nums">{movie.year}</p>
         </div>
 
         {/* Vibe meter row */}
-        <div className="flex gap-1 flex-wrap">
-          {movie.darknessLevel > 6 && <span className="text-xs font-black uppercase bg-fadedBlack text-background px-1.5 py-0.5">Dark</span>}
-          {movie.darknessLevel < 4 && (
-            <span className="text-xs font-black uppercase bg-fadedGold text-fadedBlack border border-fadedBlack/20 px-1.5 py-0.5">Light</span>
-          )}
-          {movie.intensenessLevel > 7 && (
-            <span className="text-xs font-black uppercase bg-danger text-background border border-fadedBlack/20 px-1.5 py-0.5">Intense</span>
-          )}
-          {movie.funninessLevel > 6 && (
-            <span className="text-xs font-black uppercase bg-fadedGreen text-background border border-fadedBlack/20 px-1.5 py-0.5">Funny</span>
-          )}
-          {movie.slownessLevel > 6 && (
-            <span className="text-xs font-black uppercase bg-backgroundSecondary text-fadedBlack border border-fadedBlack/20 px-1.5 py-0.5">
-              Slow Burn
-            </span>
-          )}
+        <div className="flex gap-1.5 flex-wrap">
+          {movie.darknessLevel > 6 && <span className="font-dmSans text-[9px] uppercase tracking-[0.1em] text-fadedBlack/70 border border-fadedBlack/15 px-1.5 py-0.5">Dark</span>}
+          {movie.darknessLevel < 4 && <span className="font-dmSans text-[9px] uppercase tracking-[0.1em] text-fadedBlack/70 border border-fadedBlack/15 px-1.5 py-0.5">Light</span>}
+          {movie.intensenessLevel > 7 && <span className="font-dmSans text-[9px] uppercase tracking-[0.1em] text-fadedBlack/70 border border-fadedBlack/15 px-1.5 py-0.5">Intense</span>}
+          {movie.funninessLevel > 6 && <span className="font-dmSans text-[9px] uppercase tracking-[0.1em] text-fadedBlack/70 border border-fadedBlack/15 px-1.5 py-0.5">Funny</span>}
+          {movie.slownessLevel > 6 && <span className="font-dmSans text-[9px] uppercase tracking-[0.1em] text-fadedBlack/70 border border-fadedBlack/15 px-1.5 py-0.5">Slow Burn</span>}
         </div>
 
         {/* Status badges */}
         <div className="flex gap-2 flex-wrap">
           {movie.isFavorite && (
-            <div className="flex items-center gap-1 bg-fadedGold px-2 py-0.5 border border-fadedBlack/20 text-fadedBlack">
-              <Heart size={12} strokeWidth={3} />
-              <span className="text-xs font-black">Fav</span>
+            <div className="flex items-center gap-1 px-2 py-0.5 border border-fadedBlack/15 text-fadedBlack/70">
+              <Heart size={11} strokeWidth={2} />
+              <span className="font-dmSans text-[9px] uppercase tracking-[0.1em]">Fav</span>
             </div>
           )}
           {movie.isLiked && (
-            <div className="flex items-center gap-1 bg-backgroundSecondary px-2 py-0.5 border border-fadedBlack/20 text-fadedBlack">
-              <ThumbsUp size={12} strokeWidth={3} />
-              <span className="text-xs font-black">Liked</span>
+            <div className="flex items-center gap-1 px-2 py-0.5 border border-fadedBlack/15 text-fadedBlack/70">
+              <ThumbsUp size={11} strokeWidth={2} />
+              <span className="font-dmSans text-[9px] uppercase tracking-[0.1em]">Liked</span>
             </div>
           )}
         </div>
@@ -176,9 +166,9 @@ function MovieCard({ movie, onSelect, onRemove }) {
         {/* Remove */}
         <button
           onClick={() => onRemove(movie.slug)}
-          className="mt-auto w-full bg-backgroundSecondary text-fadedBlack border border-fadedBlack/20 font-black uppercase py-2 text-xs hover:bg-danger hover:text-background hover:border-danger transition-colors duration-150 flex items-center justify-center gap-1"
+          className="mt-auto w-full bg-background text-fadedBlack/70 border border-fadedBlack/15 font-dmSans text-[10px] uppercase tracking-[0.12em] py-2.5 hover:bg-danger/10 hover:text-danger hover:border-danger/30 transition-colors duration-150 flex items-center justify-center gap-1.5"
         >
-          <Trash2 size={14} strokeWidth={3} />
+          <Trash2 size={13} strokeWidth={2} />
           Remove
         </button>
       </div>
@@ -290,12 +280,12 @@ export default function SavedMoviesPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4">
-        <div className="text-center border border-fadedBlack/15 bg-background p-8">
-          <p className="text-fadedBlack font-black text-xl mb-4 uppercase">Error loading saved movies</p>
+      <div className="min-h-screen bg-background flex items-center justify-center px-6">
+        <div className="text-center max-w-sm">
+          <h1 className="font-dmSerifDisplay text-3xl text-fadedBlack leading-tight mb-6">we couldn&apos;t load your saved films</h1>
           <button
             onClick={() => router.push("/profile")}
-            className="bg-fadedBlack text-background px-6 py-3 font-black uppercase border-2 border-fadedBlack hover:bg-fadedBlue hover:border-fadedBlue transition-all"
+            className="font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack border border-fadedBlack px-6 py-3.5 hover:bg-fadedBlack hover:text-background transition-colors duration-200"
           >
             Back to Profile
           </button>
@@ -308,12 +298,11 @@ export default function SavedMoviesPage() {
     <div className="min-h-screen bg-background pb-24">
       <Navbar isLoaded={isLoaded} currentPage="profile" />
 
-      <div className="max-w-6xl mx-auto px-4 pt-4">
+      <div className="max-w-6xl mx-auto px-6 sm:px-12 lg:px-20 pt-12">
         {/* ── Header ── */}
-        <div className={`transition-all duration-1000 ${isLoaded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-20"} mb-10`}>
-          <h1 className="font-bigShouldersDisplay font-black text-fadedBlack text-5xl sm:text-6xl lg:text-7xl leading-none uppercase">saved</h1>
-          <h2 className="font-bigShouldersDisplay font-black text-fadedBlack text-5xl sm:text-6xl lg:text-7xl leading-none uppercase">movies</h2>
-          <p className="text-fadedBlack/60 text-sm font-bold mt-3">
+        <div className={`transition-all duration-700 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"} mb-10`}>
+          <h1 className="font-dmSerifDisplay text-fadedBlack text-4xl sm:text-5xl leading-[0.95]">saved movies</h1>
+          <p className="font-dmSans text-fadedBlack/70 text-sm mt-4 tabular-nums">
             {displayedMovies.length} of {savedMovies.length} {savedMovies.length === 1 ? "film" : "films"}
           </p>
         </div>
@@ -325,7 +314,7 @@ export default function SavedMoviesPage() {
         >
           {/* Top row: Sort + Filter toggle */}
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="text-fadedBlack/60 text-xs font-black uppercase tracking-widest mr-1">Sort</span>
+            <span className="font-dmSans text-[9px] text-fadedBlack/70 uppercase tracking-[0.22em] mr-1">Sort</span>
             {SORT_OPTIONS.map((opt) => (
               <SortButton key={opt.key} label={opt.label} active={sortKey === opt.key} direction={sortDir} onClick={() => handleSortClick(opt.key)} />
             ))}
@@ -333,16 +322,16 @@ export default function SavedMoviesPage() {
             {/* Filter toggle */}
             <button
               onClick={() => setPanelOpen((o) => !o)}
-              className={`flex items-center gap-1.5 px-3 py-2 border-2 font-black text-xs uppercase tracking-wider transition-colors duration-100 ml-auto ${
+              className={`flex items-center gap-1.5 px-3 py-2 border font-dmSans text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ml-auto ${
                 panelOpen || activeFilterCount > 0
                   ? "bg-fadedBlack text-background border-fadedBlack"
-                  : "bg-transparent text-fadedBlack border-fadedBlack/20 hover:bg-backgroundSecondary"
+                  : "bg-transparent text-fadedBlack/70 border-fadedBlack/15 hover:bg-backgroundSecondary"
               }`}
             >
-              <SlidersHorizontal size={14} strokeWidth={3} />
+              <SlidersHorizontal size={13} strokeWidth={2} />
               Filter
               {activeFilterCount > 0 && (
-                <span className="bg-background text-fadedBlack text-xs font-black rounded-none px-1.5 py-0.5 ml-0.5">{activeFilterCount}</span>
+                <span className="bg-background text-fadedBlack text-[10px] tabular-nums px-1.5 py-0.5 ml-0.5">{activeFilterCount}</span>
               )}
             </button>
           </div>
@@ -352,7 +341,7 @@ export default function SavedMoviesPage() {
             <div className="bg-background border border-fadedBlack/10 p-5 space-y-5">
               {/* Vibe filters */}
               <div>
-                <p className="text-fadedBlack/60 text-xs font-black uppercase tracking-widest mb-3">Vibe</p>
+                <p className="font-dmSans text-[9px] text-fadedBlack/70 uppercase tracking-[0.22em] mb-3">Vibe</p>
                 <div className="flex flex-wrap gap-2">
                   {VIBE_FILTERS.map((v) => (
                     <VibeChip key={v.key} label={v.label} active={activeVibes.includes(v.key)} onClick={() => toggleVibe(v.key)} />
@@ -363,7 +352,7 @@ export default function SavedMoviesPage() {
               {/* Genre filters */}
               {allGenres.length > 0 && (
                 <div>
-                  <p className="text-fadedBlack/60 text-xs font-black uppercase tracking-widest mb-3">Genre</p>
+                  <p className="font-dmSans text-[9px] text-fadedBlack/70 uppercase tracking-[0.22em] mb-3">Genre</p>
                   <div className="flex flex-wrap gap-2">
                     {allGenres.map((g) => (
                       <VibeChip key={g} label={g} active={activeGenres.includes(g)} onClick={() => toggleGenre(g)} />
@@ -374,7 +363,7 @@ export default function SavedMoviesPage() {
 
               {/* Min rating */}
               <div>
-                <p className="text-fadedBlack/60 text-xs font-black uppercase tracking-widest mb-3">Minimum Rating</p>
+                <p className="font-dmSans text-[9px] text-fadedBlack/70 uppercase tracking-[0.22em] mb-3">Minimum Rating</p>
                 <RatingStars min={ratingMin} setMin={setRatingMin} />
               </div>
 
@@ -382,9 +371,9 @@ export default function SavedMoviesPage() {
               {activeFilterCount > 0 && (
                 <button
                   onClick={clearAll}
-                  className="flex items-center gap-1 text-xs font-black uppercase tracking-wider text-fadedBlack/60 hover:text-fadedBlack transition-colors"
+                  className="flex items-center gap-1 font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack/70 hover:text-fadedBlack transition-colors"
                 >
-                  <X size={12} strokeWidth={3} /> Clear all filters
+                  <X size={12} strokeWidth={2} /> Clear all filters
                 </button>
               )}
             </div>
@@ -399,7 +388,7 @@ export default function SavedMoviesPage() {
                   <button
                     key={k}
                     onClick={() => toggleVibe(k)}
-                    className="flex items-center gap-1 bg-background text-fadedBlack border border-fadedBlack/15 px-2 py-1 text-xs font-black uppercase hover:bg-backgroundSecondary transition-colors"
+                    className="flex items-center gap-1 bg-background text-fadedBlack border border-fadedBlack/15 px-2 py-1 font-dmSans text-[10px] uppercase tracking-[0.1em] hover:bg-backgroundSecondary transition-colors"
                   >
                     {v?.label} <X size={10} strokeWidth={3} />
                   </button>
@@ -409,7 +398,7 @@ export default function SavedMoviesPage() {
                 <button
                   key={g}
                   onClick={() => toggleGenre(g)}
-                  className="flex items-center gap-1 bg-background text-fadedBlack border border-fadedBlack/20 px-2 py-1 text-xs font-black uppercase hover:bg-backgroundSecondary transition-colors"
+                  className="flex items-center gap-1 bg-background text-fadedBlack border border-fadedBlack/20 px-2 py-1 font-dmSans text-[10px] uppercase tracking-[0.1em] hover:bg-backgroundSecondary transition-colors"
                 >
                   {g} <X size={10} strokeWidth={3} />
                 </button>
@@ -417,7 +406,7 @@ export default function SavedMoviesPage() {
               {ratingMin > 0 && (
                 <button
                   onClick={() => setRatingMin(0)}
-                  className="flex items-center gap-1 bg-background text-fadedBlack border border-fadedBlack/20 px-2 py-1 text-xs font-black uppercase hover:bg-backgroundSecondary transition-colors"
+                  className="flex items-center gap-1 bg-background text-fadedBlack border border-fadedBlack/20 px-2 py-1 font-dmSans text-[10px] uppercase tracking-[0.1em] hover:bg-backgroundSecondary transition-colors"
                 >
                   ★ {ratingMin}+ <X size={10} strokeWidth={3} />
                 </button>
@@ -441,25 +430,25 @@ export default function SavedMoviesPage() {
         ) : savedMovies.length === 0 ? (
           // Completely empty state
           <div
-            className={`border border-fadedBlack/10 bg-background p-16 text-center transition-all duration-700 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
+            className={`border-t border-fadedBlack/10 py-24 text-center transition-all duration-700 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}
             style={{ transitionDelay: "300ms" }}
           >
-            <p className="text-fadedBlack font-bigShouldersDisplay font-black text-2xl uppercase mb-2">No saved movies</p>
-            <p className="text-fadedBlack/60 font-bold mb-8 text-sm">Start exploring and bookmark films you want to watch</p>
+            <h3 className="font-dmSerifDisplay text-fadedBlack text-3xl leading-tight mb-3">no saved movies</h3>
+            <p className="font-dmSans text-fadedBlack/70 text-sm mb-8 max-w-xs mx-auto leading-relaxed">Start exploring and bookmark the films you want to watch.</p>
             <button
               onClick={() => router.push("/")}
-              className="bg-fadedBlack text-background px-8 py-3 font-black uppercase border-2 border-fadedBlack hover:bg-fadedBlue hover:border-fadedBlue transition-all"
+              className="font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack border border-fadedBlack px-8 py-3.5 hover:bg-fadedBlack hover:text-background transition-colors duration-200"
             >
               Explore Movies
             </button>
           </div>
         ) : (
           // Filters returned nothing
-          <div className="border border-fadedBlack/10 bg-background p-12 text-center">
-            <p className="text-fadedBlack font-black text-xl uppercase mb-2">No movies match your filters</p>
+          <div className="border-t border-fadedBlack/10 py-20 text-center">
+            <h3 className="font-dmSerifDisplay text-fadedBlack text-2xl leading-tight mb-5">no movies match your filters</h3>
             <button
               onClick={clearAll}
-              className="mt-4 bg-fadedBlack text-background px-6 py-2 font-black uppercase border-2 border-fadedBlack hover:bg-fadedBlue hover:border-fadedBlue transition-all text-sm"
+              className="font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack border border-fadedBlack px-6 py-3 hover:bg-fadedBlack hover:text-background transition-colors duration-200"
             >
               Clear Filters
             </button>

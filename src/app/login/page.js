@@ -106,10 +106,10 @@ export default function LoginPage() {
             <button
               key={m}
               onClick={() => { setLoginMode(m); setError(""); }}
-              className={`flex-1 px-6 py-4 font-black uppercase border-2 border-fadedBlack/25 transition-all duration-200 ${isLg ? "text-base" : "text-sm"} ${
+              className={`flex-1 px-6 py-3.5 font-dmSans uppercase tracking-[0.12em] border transition-colors duration-200 ${isLg ? "text-[11px]" : "text-[10px]"} ${
                 loginMode === m
                   ? "bg-fadedBlack text-background border-fadedBlack"
-                  : "bg-background text-fadedBlack hover:bg-backgroundSecondary"
+                  : "bg-background text-fadedBlack/70 border-fadedBlack/15 hover:bg-backgroundSecondary"
               }`}
             >
               {m === "login" ? "Login" : "Sign Up"}
@@ -120,7 +120,7 @@ export default function LoginPage() {
         {/* Google OAuth */}
         <button
           onClick={handleGoogleSignIn}
-          className={`w-full border border-fadedBlack/25 bg-background flex items-center justify-center gap-3 font-bold text-fadedBlack hover:border-fadedBlack/60 transition-colors mb-6 ${isLg ? "px-4 py-4 text-base" : "px-4 py-3 text-sm"}`}
+          className={`w-full border border-fadedBlack/20 bg-background flex items-center justify-center gap-3 font-dmSans text-fadedBlack hover:border-fadedBlack/50 transition-colors mb-6 ${isLg ? "px-4 py-4 text-sm" : "px-4 py-3 text-sm"}`}
         >
           <GoogleIcon />
           Continue with Google
@@ -128,22 +128,22 @@ export default function LoginPage() {
 
         {/* Divider */}
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex-1 border-t border-fadedBlack/15" />
-          <span className="text-xs font-bold text-fadedBlack/40 uppercase tracking-widest">or</span>
-          <div className="flex-1 border-t border-fadedBlack/15" />
+          <div className="flex-1 border-t border-fadedBlack/10" />
+          <span className="font-dmSans text-[9px] text-fadedBlack/70 uppercase tracking-[0.22em]">or</span>
+          <div className="flex-1 border-t border-fadedBlack/10" />
         </div>
 
         {/* Email / password form */}
         <form onSubmit={handleSubmit} className="space-y-4 mb-6">
           {error && (
-            <div className="bg-fadedBlack/5 border border-fadedBlack/20 p-4">
-              <p className="text-fadedBlack font-black uppercase text-sm">{error}</p>
+            <div className="bg-danger/10 border border-danger/30 p-4">
+              <p className="font-dmSans text-danger text-sm">{error}</p>
             </div>
           )}
 
           {loginMode === "signup" && (
             <div>
-              <label htmlFor={`${inputId}-name-${size}`} className="block text-fadedBlack font-black uppercase mb-2 text-sm">
+              <label htmlFor={`${inputId}-name-${size}`} className="block font-dmSans text-[9px] uppercase tracking-[0.22em] text-fadedBlack/70 mb-2">
                 Name
               </label>
               <input
@@ -152,14 +152,14 @@ export default function LoginPage() {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
                 id={`${inputId}-name-${size}`}
-                className={`w-full font-bold border-2 border-fadedBlack/30 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-lg" : "p-3 text-base"}`}
+                className={`w-full font-dmSans text-fadedBlack placeholder-fadedBlack/65 border-2 border-fadedBlack/30 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-base" : "p-3 text-base"}`}
                 placeholder="Your name"
               />
             </div>
           )}
 
           <div>
-            <label htmlFor={`${inputId}-email-${size}`} className="block text-fadedBlack font-black uppercase mb-2 text-sm">
+            <label htmlFor={`${inputId}-email-${size}`} className="block font-dmSans text-[9px] uppercase tracking-[0.22em] text-fadedBlack/70 mb-2">
               Email
             </label>
             <input
@@ -168,13 +168,13 @@ export default function LoginPage() {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
               id={`${inputId}-email-${size}`}
-              className={`w-full font-bold border-2 border-fadedBlack/30 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-lg" : "p-3 text-base"}`}
+              className={`w-full font-dmSans text-fadedBlack placeholder-fadedBlack/65 border-2 border-fadedBlack/30 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-base" : "p-3 text-base"}`}
               placeholder="your@email.com"
             />
           </div>
 
           <div>
-            <label htmlFor={`${inputId}-password-${size}`} className="block text-fadedBlack font-black uppercase mb-2 text-sm">
+            <label htmlFor={`${inputId}-password-${size}`} className="block font-dmSans text-[9px] uppercase tracking-[0.22em] text-fadedBlack/70 mb-2">
               Password
             </label>
             <input
@@ -184,14 +184,14 @@ export default function LoginPage() {
               required
               minLength={loginMode === "signup" ? 8 : undefined}
               id={`${inputId}-password-${size}`}
-              className={`w-full font-bold border-2 border-fadedBlack/30 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-lg" : "p-3 text-base"}`}
+              className={`w-full font-dmSans text-fadedBlack placeholder-fadedBlack/65 border-2 border-fadedBlack/30 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-base" : "p-3 text-base"}`}
               placeholder={loginMode === "signup" ? "At least 8 characters" : "Your password"}
             />
           </div>
 
           {loginMode === "signup" && (
             <div>
-              <label htmlFor={`${inputId}-confirm-${size}`} className="block text-fadedBlack font-black uppercase mb-2 text-sm">
+              <label htmlFor={`${inputId}-confirm-${size}`} className="block font-dmSans text-[9px] uppercase tracking-[0.22em] text-fadedBlack/70 mb-2">
                 Confirm Password
               </label>
               <input
@@ -200,7 +200,7 @@ export default function LoginPage() {
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 required
                 id={`${inputId}-confirm-${size}`}
-                className={`w-full font-bold border-2 border-fadedBlack/30 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-lg" : "p-3 text-base"}`}
+                className={`w-full font-dmSans text-fadedBlack placeholder-fadedBlack/65 border-2 border-fadedBlack/30 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-base" : "p-3 text-base"}`}
                 placeholder="Re-enter password"
               />
             </div>
@@ -209,15 +209,15 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full border-2 border-fadedBlack bg-fadedBlack text-background font-black uppercase hover:bg-fadedBlue transition-all duration-200 disabled:opacity-50 ${isLg ? "px-8 py-4 text-lg" : "px-6 py-4 text-base"}`}
+            className={`w-full border border-fadedBlack bg-fadedBlack text-background font-dmSans uppercase tracking-[0.12em] hover:bg-fadedBlue hover:border-fadedBlue transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${isLg ? "px-8 py-4 text-[11px]" : "px-6 py-4 text-[10px]"}`}
           >
             {isLoading
-              ? loginMode === "signup" ? "Creating Account..." : "Logging in..."
+              ? loginMode === "signup" ? "Creating account…" : "Logging in…"
               : loginMode === "signup" ? "Sign Up" : "Log In"}
           </button>
         </form>
 
-        <p className="text-center text-sm font-bold text-fadedBlack/60">
+        <p className="text-center font-dmSans text-sm text-fadedBlack/70 leading-relaxed">
           {loginMode === "signup"
             ? "Save your films and get picks built around your taste."
             : "Access your saved films and recommendations."}
@@ -232,11 +232,12 @@ export default function LoginPage() {
       <div className="hidden lg:flex min-h-screen">
         {/* Left — Brand */}
         <div className="w-1/2 bg-background flex items-center justify-center p-12 border-r border-fadedBlack/15">
-          <div className={`text-center transition-all duration-1000 ${isLoaded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-20"}`}>
-            <Image src="/images/eye-black-and-white.png" alt="Logo" width={100} height={100} className="mx-auto mb-4" />
-            <h1 className="text-8xl xl:text-9xl font-black text-fadedBlack leading-none mb-4">you should</h1>
-            <p className="text-8xl xl:text-9xl font-black text-fadedBlack leading-none mb-8">watch</p>
-            <p className="text-2xl font-bold text-fadedBlack/70 max-w-lg mx-auto">
+          <div className={`text-center transition-all duration-700 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+            <Image src="/images/eye-black-and-white.png" alt="Logo" width={72} height={72} className="mx-auto mb-8" />
+            <h1 className="font-dmSerifDisplay text-5xl xl:text-6xl text-fadedBlack leading-[0.95] mb-6">
+              you should<br />watch
+            </h1>
+            <p className="font-dmSans text-base text-fadedBlack/70 max-w-sm mx-auto leading-relaxed">
               Film recommendations built around your taste.
             </p>
           </div>
