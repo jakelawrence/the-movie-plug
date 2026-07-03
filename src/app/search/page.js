@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, useId } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SEARCH_FILTERS } from "../api/lib/search-filters";
-import { Search, X, Loader2, ChevronDown, ChevronUp, Star, Bookmark, BookmarkCheck, SlidersHorizontal } from "lucide-react";
+import { Search, X, Loader2, ChevronDown, ChevronUp, ChevronRight, Star, Bookmark, BookmarkCheck, SlidersHorizontal } from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { useAuth } from "../hooks/useAuth";
 import { MovieDetailsModal } from "../components/MovieDetailsModal";
@@ -357,6 +357,9 @@ function ResultCard({ movie, onSave, isSaved, inputSlugs, onOpen }) {
               )}
             </div>
             {movie.genres?.length > 0 && <p className="font-dmSans text-background/70 text-[10px]">{movie.genres.slice(0, 2).join(", ")}</p>}
+            <p className="hidden [@media(hover:none)]:flex items-center gap-1 font-dmSans text-[9px] uppercase tracking-[0.18em] text-background/70 mt-2">
+              Tap again for details <ChevronRight size={11} strokeWidth={2} />
+            </p>
           </div>
         </div>
       </div>
