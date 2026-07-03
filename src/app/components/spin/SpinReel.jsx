@@ -74,13 +74,13 @@ export function SpinReel({ pool, winner, onSettled }) {
 
   return (
     <div className="flex flex-col items-center">
-      <p role="status" aria-live="assertive" className="text-fadedBlack/60 text-xs font-black uppercase tracking-widest mb-4">
+      <p role="status" aria-live="assertive" className="font-dmSans text-fadedBlack/70 text-[9px] uppercase tracking-[0.22em] mb-4">
         Spinning…
       </p>
 
       {/* Reel window — the payline frame */}
       <div
-        className="relative overflow-hidden border-2 border-fadedBlack"
+        className="relative overflow-hidden border border-fadedBlack/20"
         style={{ height: cellHeight, width: Math.round((cellHeight * 2) / 3) }}
       >
         <div ref={trackRef} className="absolute top-0 left-0 w-full will-change-transform">

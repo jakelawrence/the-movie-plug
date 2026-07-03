@@ -11,8 +11,8 @@ function Chip({ label, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1.5 border-2 font-black text-xs uppercase tracking-wider transition-colors duration-100 ${
-        active ? "bg-fadedBlack text-background border-fadedBlack" : "bg-background text-fadedBlack border-fadedBlack/20 hover:bg-backgroundSecondary"
+      className={`px-3 py-1.5 border font-dmSans text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
+        active ? "bg-fadedBlack text-background border-fadedBlack" : "bg-background text-fadedBlack/70 border-fadedBlack/15 hover:bg-backgroundSecondary"
       }`}
     >
       {label}
@@ -33,11 +33,11 @@ function RatingStars({ min, setMin }) {
             aria-label={`Filter by ${val}+ star${val !== 1 ? "s" : ""}`}
             aria-pressed={val <= min}
           >
-            <Star size={20} strokeWidth={2.5} className={val <= min ? "fill-fadedBlack text-fadedBlack" : "text-fadedBlack/30"} />
+            <Star size={18} strokeWidth={2} className={val <= min ? "fill-fadedBlack text-fadedBlack" : "text-fadedBlack/25"} />
           </button>
         );
       })}
-      {min > 0 && <span className="text-xs font-black text-fadedBlack/70 ml-1">{min}+ stars</span>}
+      {min > 0 && <span className="font-dmSans text-[10px] uppercase tracking-[0.1em] text-fadedBlack/70 ml-1.5">{min}+ stars</span>}
     </div>
   );
 }
@@ -51,7 +51,7 @@ export function SpinFilters({ genres, filters, onToggleGenre, onToggleVibe, onTo
       {/* Genre */}
       {genres.length > 0 && (
         <div>
-          <p className="text-fadedBlack/60 text-xs font-black uppercase tracking-widest mb-3">Genre</p>
+          <p className="font-dmSans text-[9px] text-fadedBlack/70 uppercase tracking-[0.22em] mb-3">Genre</p>
           <div className="flex flex-wrap gap-2">
             {genres.map((g) => (
               <Chip key={g} label={g} active={activeGenres.includes(g)} onClick={() => onToggleGenre(g)} />
@@ -62,7 +62,7 @@ export function SpinFilters({ genres, filters, onToggleGenre, onToggleVibe, onTo
 
       {/* Runtime */}
       <div>
-        <p className="text-fadedBlack/60 text-xs font-black uppercase tracking-widest mb-3">Runtime</p>
+        <p className="font-dmSans text-[9px] text-fadedBlack/70 uppercase tracking-[0.22em] mb-3">Runtime</p>
         <div className="flex flex-wrap gap-2">
           {DURATION_FILTERS.map((d) => (
             <Chip key={d.key} label={d.label} active={durationKeys.includes(d.key)} onClick={() => onToggleDuration(d.key)} />
@@ -72,7 +72,7 @@ export function SpinFilters({ genres, filters, onToggleGenre, onToggleVibe, onTo
 
       {/* Vibe */}
       <div>
-        <p className="text-fadedBlack/60 text-xs font-black uppercase tracking-widest mb-3">Vibe</p>
+        <p className="font-dmSans text-[9px] text-fadedBlack/70 uppercase tracking-[0.22em] mb-3">Vibe</p>
         <div className="flex flex-wrap gap-2">
           {VIBE_FILTERS.map((v) => (
             <Chip key={v.key} label={v.label} active={vibes.includes(v.key)} onClick={() => onToggleVibe(v.key)} />
@@ -82,7 +82,7 @@ export function SpinFilters({ genres, filters, onToggleGenre, onToggleVibe, onTo
 
       {/* Min rating */}
       <div>
-        <p className="text-fadedBlack/60 text-xs font-black uppercase tracking-widest mb-3">Minimum Rating</p>
+        <p className="font-dmSans text-[9px] text-fadedBlack/70 uppercase tracking-[0.22em] mb-3">Minimum Rating</p>
         <RatingStars min={ratingMin} setMin={onSetRatingMin} />
       </div>
 
@@ -90,9 +90,9 @@ export function SpinFilters({ genres, filters, onToggleGenre, onToggleVibe, onTo
       {activeCount > 0 && (
         <button
           onClick={onClear}
-          className="flex items-center gap-1 text-xs font-black uppercase tracking-wider text-fadedBlack/60 hover:text-fadedBlack transition-colors"
+          className="flex items-center gap-1 font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack/70 hover:text-fadedBlack transition-colors"
         >
-          <X size={12} strokeWidth={3} /> Clear all filters
+          <X size={12} strokeWidth={2} /> Clear all filters
         </button>
       )}
     </div>

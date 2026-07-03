@@ -158,24 +158,23 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
       >
         {/* Close button */}
         <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-background transition-colors" aria-label="Close dialog">
-          <X size={24} strokeWidth={3} />
+          <X size={20} strokeWidth={2} className="text-fadedBlack/50" />
         </button>
 
         <div className="p-8">
           {/* Title */}
           <div className="text-center mb-8">
-            <h2 id="auth-modal-title" className="text-4xl sm:text-5xl font-black text-fadedBlack leading-none mb-2">
-              {mode === "signup" ? "create" : "welcome"}
+            <h2 id="auth-modal-title" className="font-dmSerifDisplay text-4xl sm:text-5xl text-fadedBlack leading-[0.95] mb-4">
+              {mode === "signup" ? "Create account" : "Welcome back"}
             </h2>
-            <h2 className="text-4xl sm:text-5xl font-black text-fadedBlack leading-none mb-4">{mode === "signup" ? "account" : "back"}</h2>
-            <p className="text-base font-bold text-fadedBlack">
+            <p className="font-dmSans text-sm text-fadedBlack/70 leading-relaxed">
               {mode === "signup" ? "Sign up to save your streaming preferences" : "Log in to continue"}
             </p>
           </div>
 
           {error && (
-            <div className="bg-fadedBlack/5 border border-fadedBlack/20 p-4 mb-4">
-              <p className="text-fadedBlack font-black uppercase text-sm">{error}</p>
+            <div className="bg-danger/10 border border-danger/30 p-4 mb-4">
+              <p className="font-dmSans text-danger text-sm">{error}</p>
             </div>
           )}
 
@@ -185,7 +184,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
               <button
                 key={id}
                 onClick={() => handleOAuthSignIn(id)}
-                className="w-full border border-fadedBlack/25 bg-background px-4 py-3 text-sm font-bold text-fadedBlack flex items-center justify-center gap-3 hover:border-fadedBlack/60 transition-colors"
+                className="w-full border border-fadedBlack/20 bg-background px-4 py-3 text-sm font-dmSans text-fadedBlack flex items-center justify-center gap-3 hover:border-fadedBlack/50 transition-colors"
               >
                 <Icon />
                 {label}
@@ -195,16 +194,16 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
           {/* Divider */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 border-t border-fadedBlack/15" />
-            <span className="text-xs font-bold text-fadedBlack/40 uppercase tracking-widest">or</span>
-            <div className="flex-1 border-t border-fadedBlack/15" />
+            <div className="flex-1 border-t border-fadedBlack/10" />
+            <span className="font-dmSans text-[9px] text-fadedBlack/70 uppercase tracking-[0.22em]">or</span>
+            <div className="flex-1 border-t border-fadedBlack/10" />
           </div>
 
           {/* Email / password form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "signup" && (
               <div>
-                <label htmlFor={`${inputId}-name`} className="block text-fadedBlack font-black uppercase mb-2 text-sm">
+                <label htmlFor={`${inputId}-name`} className="block font-dmSans text-[9px] uppercase tracking-[0.22em] text-fadedBlack/70 mb-2">
                   Name
                 </label>
                 <input
@@ -213,14 +212,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                   id={`${inputId}-name`}
-                  className="w-full border-2 border-fadedBlack/30 bg-background p-3 text-base font-bold focus:outline-none focus:border-fadedBlack/70 transition-colors"
+                  className="w-full border-2 border-fadedBlack/30 bg-background p-3 text-base font-dmSans text-fadedBlack placeholder-fadedBlack/65 focus:outline-none focus:border-fadedBlack/70 transition-colors"
                   placeholder="Your name"
                 />
               </div>
             )}
 
             <div>
-              <label htmlFor={`${inputId}-email`} className="block text-fadedBlack font-black uppercase mb-2 text-sm">
+              <label htmlFor={`${inputId}-email`} className="block font-dmSans text-[9px] uppercase tracking-[0.22em] text-fadedBlack/70 mb-2">
                 Email
               </label>
               <input
@@ -229,13 +228,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
                 id={`${inputId}-email`}
-                className="w-full border-2 border-fadedBlack/30 bg-background p-3 text-base font-bold focus:outline-none focus:border-fadedBlack/70 transition-colors"
+                className="w-full border-2 border-fadedBlack/30 bg-background p-3 text-base font-dmSans text-fadedBlack placeholder-fadedBlack/65 focus:outline-none focus:border-fadedBlack/70 transition-colors"
                 placeholder="your@email.com"
               />
             </div>
 
             <div>
-              <label htmlFor={`${inputId}-password`} className="block text-fadedBlack font-black uppercase mb-2 text-sm">
+              <label htmlFor={`${inputId}-password`} className="block font-dmSans text-[9px] uppercase tracking-[0.22em] text-fadedBlack/70 mb-2">
                 Password
               </label>
               <input
@@ -245,14 +244,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 required
                 minLength={mode === "signup" ? 8 : undefined}
                 id={`${inputId}-password`}
-                className="w-full border-2 border-fadedBlack/30 bg-background p-3 text-base font-bold focus:outline-none focus:border-fadedBlack/70 transition-colors"
+                className="w-full border-2 border-fadedBlack/30 bg-background p-3 text-base font-dmSans text-fadedBlack placeholder-fadedBlack/65 focus:outline-none focus:border-fadedBlack/70 transition-colors"
                 placeholder={mode === "signup" ? "At least 8 characters" : "Your password"}
               />
             </div>
 
             {mode === "signup" && (
               <div>
-                <label htmlFor={`${inputId}-confirm`} className="block text-fadedBlack font-black uppercase mb-2 text-sm">
+                <label htmlFor={`${inputId}-confirm`} className="block font-dmSans text-[9px] uppercase tracking-[0.22em] text-fadedBlack/70 mb-2">
                   Confirm Password
                 </label>
                 <input
@@ -261,7 +260,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   required
                   id={`${inputId}-confirm`}
-                  className="w-full border-2 border-fadedBlack/30 bg-background p-3 text-base font-bold focus:outline-none focus:border-fadedBlack/70 transition-colors"
+                  className="w-full border-2 border-fadedBlack/30 bg-background p-3 text-base font-dmSans text-fadedBlack placeholder-fadedBlack/65 focus:outline-none focus:border-fadedBlack/70 transition-colors"
                   placeholder="Re-enter password"
                 />
               </div>
@@ -270,25 +269,22 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-fadedBlack text-background px-8 py-4 text-lg font-black uppercase border-2 border-fadedBlack hover:bg-fadedBlue hover:text-background transition-all duration-200 disabled:opacity-50"
-              style={{
-                boxShadow: "6px 6px 0px 0px rgba(31,27,23,0.2)",
-              }}
+              className="w-full bg-fadedBlack text-background px-8 py-4 font-dmSans text-[11px] uppercase tracking-[0.12em] border border-fadedBlack hover:bg-fadedBlue hover:border-fadedBlue transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? (mode === "signup" ? "Creating Account..." : "Logging in...") : mode === "signup" ? "Sign Up" : "Log In"}
+              {isLoading ? (mode === "signup" ? "Creating account…" : "Logging in…") : mode === "signup" ? "Sign Up" : "Log In"}
             </button>
           </form>
 
           {/* Toggle between login/signup */}
           <div className="mt-6 text-center">
-            <p className="text-fadedBlack font-bold mb-2 text-sm">{mode === "signup" ? "Already have an account?" : "Don't have an account?"}</p>
+            <p className="font-dmSans text-fadedBlack/70 mb-2 text-sm">{mode === "signup" ? "Already have an account?" : "Don't have an account?"}</p>
             <button
               onClick={() => {
                 setMode(mode === "signup" ? "login" : "signup");
                 setError("");
                 setFormData({ email: "", password: "", confirmPassword: "", name: "" });
               }}
-              className="text-fadedBlack font-black text-base hover:underline"
+              className="font-dmSans text-fadedBlack text-sm uppercase tracking-[0.12em] border-b border-fadedBlack hover:text-fadedBlue hover:border-fadedBlue transition-colors pb-0.5"
             >
               {mode === "signup" ? "Log In" : "Sign Up"}
             </button>

@@ -26,8 +26,7 @@ function countNormalizedSearchCharacters(value) {
     .replace(/&/g, "and")
     .replace(/['']/g, "")
     .replace(/[^\w\s]/g, "")
-    .replace(/\s+/g, "")
-    .length;
+    .replace(/\s+/g, "").length;
 }
 
 export const useDisableBodyScroll = (isOpen) => {
@@ -122,10 +121,10 @@ function MovieSearchInput({ placeholder, onSelect, excludeSlugs = [], accentColo
           aria-controls={listboxId}
           aria-expanded={open && results.length > 0}
           aria-autocomplete="list"
-          className="w-full px-4 py-3 border-2 border-fadedBlack/30 bg-background text-fadedBlack font-bold text-sm placeholder-fadedBlack/40 outline-none focus:border-fadedBlack/60 transition-colors pr-10"
+          className="w-full px-4 py-3 border-2 border-fadedBlack/30 bg-background text-fadedBlack font-dmSans text-sm placeholder-fadedBlack/65 outline-none focus:border-fadedBlack/60 transition-colors pr-10"
         />
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-fadedBlack/50 pointer-events-none">
-          {loading ? <Loader2 size={18} strokeWidth={3} className="animate-spin" /> : <Search size={18} strokeWidth={3} />}
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-fadedBlack/40 pointer-events-none">
+          {loading ? <Loader2 size={18} strokeWidth={2} className="animate-spin" /> : <Search size={18} strokeWidth={2} />}
         </div>
       </div>
 
@@ -170,8 +169,8 @@ function MovieSearchInput({ placeholder, onSelect, excludeSlugs = [], accentColo
                 />
               </div>
               <div>
-                <p className="font-black text-fadedBlack text-sm">{movie.title}</p>
-                <p className="text-fadedBlack/50 text-xs font-bold">{movie.year}</p>
+                <p className="font-dmSerifDisplay text-fadedBlack text-sm leading-tight">{movie.title}</p>
+                <p className="font-dmSans text-fadedBlack/70 text-xs mt-0.5 tabular-nums">{movie.year}</p>
               </div>
             </button>
           ))}
@@ -187,7 +186,7 @@ function MoviePill({ movie, onRemove, variant = "input" }) {
   const bg = variant === "exclude" ? "bg-danger/10 border-danger/30" : "bg-backgroundSecondary border-fadedBlack/20";
 
   return (
-    <div className={`flex items-center gap-2 border-2 ${bg} pl-2 pr-1 py-1 max-w-full`}>
+    <div className={`flex items-center gap-2 border ${bg} pl-2 pr-1 py-1 max-w-full`}>
       <div className="w-6 h-9 flex-shrink-0 border border-fadedBlack/15 overflow-hidden bg-fadedBlack/5">
         <img
           src={getPosterUrl(movie)}
@@ -203,15 +202,15 @@ function MoviePill({ movie, onRemove, variant = "input" }) {
         />
       </div>
       <div className="flex flex-col min-w-0">
-        <p className="font-black text-fadedBlack text-xs uppercase leading-tight truncate max-w-[120px]">{movie.title}</p>
-        <p className="text-fadedBlack/50 text-[10px] font-bold">{movie.year}</p>
+        <p className="font-dmSans text-fadedBlack text-[11px] leading-tight truncate max-w-[120px]">{movie.title}</p>
+        <p className="font-dmSans text-fadedBlack/70 text-[10px] tabular-nums">{movie.year}</p>
       </div>
       <button
         onClick={() => onRemove(movie.slug)}
-        className="flex-shrink-0 p-1 hover:bg-black/10 transition-colors"
+        className="flex-shrink-0 p-1 text-fadedBlack/70 hover:text-fadedBlack hover:bg-fadedBlack/5 transition-colors"
         aria-label={`Remove ${movie.title}`}
       >
-        <X size={14} strokeWidth={3} />
+        <X size={14} strokeWidth={2} />
       </button>
     </div>
   );
@@ -227,12 +226,12 @@ function Chip({ label, active, onClick, disabled = false }) {
       aria-pressed={active}
       disabled={disabled}
       aria-disabled={disabled}
-      className={`px-3 py-1.5 border-2 font-black text-xs uppercase tracking-wide transition-colors duration-100 ${
+      className={`px-3 py-1.5 border font-dmSans text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
         disabled
           ? "bg-fadedBlack/5 text-fadedBlack/30 border-fadedBlack/15 cursor-not-allowed"
           : active
             ? "bg-fadedBlack text-background border-fadedBlack"
-            : "bg-background text-fadedBlack border-fadedBlack/25 hover:border-fadedBlack/60 hover:bg-backgroundSecondary"
+            : "bg-background text-fadedBlack/70 border-fadedBlack/15 hover:border-fadedBlack/40 hover:bg-backgroundSecondary"
       }`}
     >
       {label}
@@ -253,17 +252,21 @@ function FilterSection({ title, children, defaultOpen = true, count = 0 }) {
         className="w-full flex items-center justify-between px-4 py-3 hover:bg-backgroundSecondary transition-colors"
       >
         <span className="flex items-center gap-2">
-          <span className="font-black text-fadedBlack text-xs uppercase tracking-widest">{title}</span>
+          <span className="font-dmSans text-fadedBlack/70 text-[10px] uppercase tracking-[0.18em]">{title}</span>
           {count > 0 && (
             <span
-              className="flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-fadedBlack text-background text-[10px] font-black leading-none"
+              className="flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-fadedBlack text-background text-[10px] tabular-nums leading-none"
               aria-label={`${count} active filter${count !== 1 ? "s" : ""}`}
             >
               {count}
             </span>
           )}
         </span>
-        {open ? <ChevronUp size={16} strokeWidth={3} /> : <ChevronDown size={16} strokeWidth={3} />}
+        {open ? (
+          <ChevronUp size={15} strokeWidth={2} className="text-fadedBlack/50" />
+        ) : (
+          <ChevronDown size={15} strokeWidth={2} className="text-fadedBlack/50" />
+        )}
       </button>
       {open && <div className="px-4 pb-4 pt-1 border-t border-fadedBlack/10">{children}</div>}
     </div>
@@ -317,44 +320,60 @@ function ResultCard({ movie, onSave, isSaved, inputSlugs, onOpen }) {
                 onSave(movie);
               }}
               aria-label={isSaved ? `Remove ${movie.title} from saved` : `Save ${movie.title}`}
-              className={`pointer-events-auto p-1.5 border border-fadedBlack/20 shadow-sm transition-all ${
+              className={`pointer-events-auto p-1.5 border border-fadedBlack/15 transition-colors ${
                 isSaved ? "bg-background" : "bg-background/90 hover:bg-background"
               }`}
             >
               {isSaved ? (
-                <BookmarkCheck size={16} strokeWidth={3} className="text-fadedBlack" />
+                <BookmarkCheck size={16} strokeWidth={2} className="text-fadedBlack" />
               ) : (
-                <Bookmark size={16} strokeWidth={3} className="text-fadedBlack" />
+                <Bookmark size={16} strokeWidth={2} className="text-fadedBlack" />
               )}
             </button>
           </div>
 
           {/* Tags and genre */}
           <div>
-            <div className="flex gap-2 flex-wrap mb-1">
-              {movie.darknessLevel > 6 && <span className="text-[9px] font-black uppercase bg-background/90 text-fadedBlack px-1">Dark</span>}
-              {movie.intensenessLevel > 7 && <span className="text-[9px] font-black uppercase bg-danger/90 text-background px-1">Intense</span>}
-              {movie.funninessLevel > 6 && <span className="text-[9px] font-black uppercase bg-fadedGreen/90 text-background px-1">Funny</span>}
-              {movie.slownessLevel > 6 && <span className="text-[9px] font-black uppercase bg-fadedBlack/60 text-background px-1">Slow Burn</span>}
+            <div className="flex gap-1.5 flex-wrap mb-1.5">
+              {movie.darknessLevel > 6 && (
+                <span className="font-dmSans text-[9px] uppercase tracking-[0.1em] text-background/80 border border-background/30 px-1.5 py-0.5">
+                  Dark
+                </span>
+              )}
+              {movie.intensenessLevel > 7 && (
+                <span className="font-dmSans text-[9px] uppercase tracking-[0.1em] text-background/80 border border-background/30 px-1.5 py-0.5">
+                  Intense
+                </span>
+              )}
+              {movie.funninessLevel > 6 && (
+                <span className="font-dmSans text-[9px] uppercase tracking-[0.1em] text-background/80 border border-background/30 px-1.5 py-0.5">
+                  Funny
+                </span>
+              )}
+              {movie.slownessLevel > 6 && (
+                <span className="font-dmSans text-[9px] uppercase tracking-[0.1em] text-background/80 border border-background/30 px-1.5 py-0.5">
+                  Slow Burn
+                </span>
+              )}
             </div>
-            {movie.genres?.length > 0 && <p className="text-white text-[10px] font-bold">{movie.genres.slice(0, 2).join(", ")}</p>}
+            {movie.genres?.length > 0 && <p className="font-dmSans text-background/70 text-[10px]">{movie.genres.slice(0, 2).join(", ")}</p>}
           </div>
         </div>
       </div>
 
       {/* Card info */}
       <div className="p-3 flex flex-col gap-1 flex-1">
-        <p className="font-black text-fadedBlack text-xs uppercase leading-tight line-clamp-2">{movie.title}</p>
-        <div className="flex items-center gap-2 mt-0.5">
-          {movie.year && <span className="text-fadedBlack/50 text-[10px] font-black">{movie.year}</span>}
-          {movie.duration && <span className="text-fadedBlack/50 text-[10px] font-black">{movie.duration}m</span>}
+        <p className="font-dmSerifDisplay text-fadedBlack text-sm leading-tight line-clamp-2">{movie.title}</p>
+        <div className="flex items-center gap-2 mt-0.5 font-dmSans tabular-nums">
+          {movie.year && <span className="text-fadedBlack/70 text-[10px]">{movie.year}</span>}
+          {movie.duration && <span className="text-fadedBlack/70 text-[10px]">{movie.duration}m</span>}
           {movie.averageRating && (
-            <span className="text-fadedBlack/70 text-[10px] font-black flex items-center gap-0.5">
+            <span className="text-fadedBlack/70 text-[10px] flex items-center gap-0.5">
               <Star size={9} className="fill-fadedBlack text-fadedBlack" /> {movie.averageRating.toFixed(1)}
             </span>
           )}
         </div>
-        {movie.director && <p className="text-fadedBlack/50 text-[10px] font-bold truncate">{movie.director}</p>}
+        {movie.director && <p className="font-dmSans text-fadedBlack/70 text-[10px] truncate">{movie.director}</p>}
       </div>
     </div>
   );
@@ -367,14 +386,15 @@ function EmptyState({ hasInputMovies }) {
     <div className="flex flex-col items-center justify-center h-full min-h-[300px] text-center px-8">
       {hasInputMovies ? (
         <>
-          <div className="text-5xl mb-4">🎬</div>
-          <p className="font-bigShouldersDisplay font-black text-fadedBlack text-2xl uppercase leading-tight mb-2">refine & search</p>
-          <p className="text-fadedBlack/60 font-bold text-sm">Adjust your filters, then tap Find Movies.</p>
+          <h3 className="font-dmSerifDisplay text-fadedBlack text-3xl leading-tight mb-3">refine &amp; search</h3>
+          <p className="font-dmSans text-fadedBlack/70 text-sm max-w-xs leading-relaxed">Adjust your filters, then tap Find Movies.</p>
         </>
       ) : (
         <>
-          <p className="font-bigShouldersDisplay font-black text-fadedBlack text-2xl uppercase leading-tight mb-2">add a film</p>
-          <p className="text-fadedBlack/60 font-bold text-sm max-w-xs">Search for a title you love to anchor your recommendations.</p>
+          <h3 className="font-dmSerifDisplay text-fadedBlack text-3xl leading-tight mb-3">add a film</h3>
+          <p className="font-dmSans text-fadedBlack/70 text-sm max-w-xs leading-relaxed">
+            Search for a title you love to anchor your recommendations.
+          </p>
         </>
       )}
     </div>
@@ -617,7 +637,9 @@ export default function SearchPage() {
               ))}
             </div>
           )}
-          {inputMovies.length === 0 && <p className="text-fadedBlack/50 text-xs font-bold">Add up to 5 movies to anchor your search</p>}
+          {inputMovies.length === 0 && (
+            <p className="font-dmSans text-fadedBlack/70 text-xs leading-relaxed">Add up to 5 movies to anchor your search</p>
+          )}
         </div>
       </FilterSection>
 
@@ -638,7 +660,9 @@ export default function SearchPage() {
             </div>
           )}
           {excludeMovies.length === 0 && (
-            <p className="text-fadedBlack/50 text-xs font-bold">Movies added here are excluded — and their fans are down-weighted in results</p>
+            <p className="font-dmSans text-fadedBlack/70 text-xs leading-relaxed">
+              Movies added here are excluded — and their fans are down-weighted in results
+            </p>
           )}
         </div>
       </FilterSection>
@@ -653,9 +677,9 @@ export default function SearchPage() {
         {activeGenres.length > 0 && (
           <button
             onClick={() => setActiveGenres([])}
-            className="mt-3 text-xs font-black uppercase text-fadedBlack/50 hover:text-fadedBlack flex items-center gap-1"
+            className="mt-3 font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack/70 hover:text-fadedBlack flex items-center gap-1"
           >
-            <X size={10} strokeWidth={3} /> Clear genres
+            <X size={10} strokeWidth={2} /> Clear genres
           </button>
         )}
       </FilterSection>
@@ -701,18 +725,20 @@ export default function SearchPage() {
       <FilterSection title="Minimum Rating" defaultOpen={false} count={minRating > 0 ? 1 : 0}>
         <div className="flex items-center gap-1">
           {[1, 2, 3, 4, 5].map((val) => (
-            <button key={val} onClick={() => setMinRating(minRating === val ? 0 : val)} className="transition-opacity" title={`${val}+ stars`}>
-              <Star size={24} strokeWidth={2.5} className={val <= minRating ? "fill-fadedBlack text-fadedBlack" : "text-fadedBlack opacity-20"} />
+            <button key={val} onClick={() => setMinRating(minRating === val ? 0 : val)} className="transition-opacity p-0.5" title={`${val}+ stars`}>
+              <Star size={20} strokeWidth={2} className={val <= minRating ? "fill-fadedBlack text-fadedBlack" : "text-fadedBlack opacity-20"} />
             </button>
           ))}
-          {minRating > 0 && <span className="text-xs font-black text-fadedBlack/60 ml-2">{minRating}.0+ stars</span>}
+          {minRating > 0 && (
+            <span className="font-dmSans text-[10px] uppercase tracking-[0.1em] text-fadedBlack/70 ml-2 tabular-nums">{minRating}.0+ stars</span>
+          )}
         </div>
       </FilterSection>
 
       {/* ── STREAMING ── */}
       <div className="border border-fadedBlack/15 bg-background px-4 py-3">
         <label
-          className={`flex items-center gap-3 font-black text-xs uppercase tracking-widest ${!user?.username ? "text-fadedBlack/40" : "text-fadedBlack"}`}
+          className={`flex items-center gap-3 font-dmSans text-[10px] uppercase tracking-[0.18em] ${!user?.username ? "text-fadedBlack/70" : "text-fadedBlack/70"}`}
         >
           <input
             type="checkbox"
@@ -723,7 +749,7 @@ export default function SearchPage() {
           />
           Only show movies on my services
         </label>
-        {!user?.username && <p className="mt-2 text-fadedBlack/50 text-xs font-bold">Sign in to use your saved services.</p>}
+        {!user?.username && <p className="mt-2 text-fadedBlack/70 text-xs font-bold">Sign in to use your saved services.</p>}
       </div>
 
       {/* ── SEARCH BUTTON ── */}
@@ -731,19 +757,19 @@ export default function SearchPage() {
         onClick={handleSearch}
         disabled={inputMovies.length === 0 || isSearching}
         type="button"
-        className={`w-full py-4 font-black text-sm uppercase tracking-widest border-2 flex items-center justify-center gap-2 transition-all duration-150 ${
+        className={`w-full py-4 font-dmSans text-[10px] uppercase tracking-[0.12em] border flex items-center justify-center gap-2 transition-colors duration-150 ${
           inputMovies.length === 0
             ? "bg-fadedBlack/5 text-fadedBlack/40 border-fadedBlack/15 cursor-not-allowed"
-            : "bg-fadedBlack text-background border-fadedBlack hover:bg-fadedBlue hover:border-fadedBlue active:scale-95"
+            : "bg-fadedBlack text-background border-fadedBlack hover:bg-fadedBlue hover:border-fadedBlue"
         }`}
       >
         {isSearching ? (
           <>
-            <Loader2 size={16} strokeWidth={3} className="animate-spin" /> Searching…
+            <Loader2 size={15} strokeWidth={2} className="animate-spin" /> Searching…
           </>
         ) : (
           <>
-            <Search size={16} strokeWidth={3} /> Find Movies
+            <Search size={15} strokeWidth={2} /> Find Movies
           </>
         )}
       </button>
@@ -756,9 +782,9 @@ export default function SearchPage() {
       {hasSearched && (
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="font-bigShouldersDisplay font-black text-fadedBlack text-3xl uppercase leading-none">results</h2>
+            <h2 className="font-dmSerifDisplay text-fadedBlack text-3xl leading-tight">results</h2>
             {results.length > 0 && (
-              <p className="text-fadedBlack/60 text-xs font-bold mt-1">
+              <p className="font-dmSans text-fadedBlack/70 text-xs mt-1 tabular-nums">
                 {results.length} film{results.length !== 1 ? "s" : ""} found
                 {activeFilterCount > 0 && ` after ${activeFilterCount} filter${activeFilterCount !== 1 ? "s" : ""}`}
               </p>
@@ -769,8 +795,8 @@ export default function SearchPage() {
 
       {/* Error */}
       {searchError && (
-        <div className="border border-fadedBlack/20 bg-fadedBlack/5 p-4 mb-4" role="alert">
-          <p className="text-fadedBlack font-black text-sm uppercase">{searchError}</p>
+        <div className="border border-danger/30 bg-danger/10 p-4 mb-4" role="alert">
+          <p className="font-dmSans text-danger text-sm">{searchError}</p>
         </div>
       )}
 
@@ -780,17 +806,19 @@ export default function SearchPage() {
           {!hasSearched ? (
             <EmptyState hasInputMovies={inputMovies.length > 0} />
           ) : (
-            <div className="text-center">
-              <p className="font-bigShouldersDisplay font-black text-fadedBlack text-2xl uppercase mb-2">No matches</p>
-              <p className="text-fadedBlack/60 font-bold text-sm">Try removing some filters or adding more input movies</p>
+            <div className="text-center px-8">
+              <h3 className="font-dmSerifDisplay text-fadedBlack text-3xl leading-tight mb-3">no matches</h3>
+              <p className="font-dmSans text-fadedBlack/70 text-sm max-w-xs mx-auto leading-relaxed">
+                Try removing some filters or adding more input movies.
+              </p>
             </div>
           )}
         </div>
       ) : isSearching ? (
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <Loader2 size={48} strokeWidth={2} className="text-fadedBlack animate-spin mx-auto mb-4" />
-            <p className="text-fadedBlack font-black uppercase text-sm tracking-widest opacity-50">Finding films…</p>
+            <Loader2 size={32} strokeWidth={2} className="text-fadedBlack/50 animate-spin mx-auto mb-4" />
+            <p className="font-dmSans text-fadedBlack/70 uppercase text-[9px] tracking-[0.22em]">Finding films…</p>
           </div>
         </div>
       ) : (
@@ -826,10 +854,9 @@ export default function SearchPage() {
 
       <div className={`flex-1 transition-all duration-700 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
         {/* Page header */}
-        <div className="px-4 md:px-8 pt-8 pb-6">
-          <div className={`transition-all duration-1000 ${isLoaded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-20"}`}>
-            <h1 className="font-bigShouldersDisplay font-black text-fadedBlack text-5xl sm:text-6xl lg:text-7xl uppercase leading-none">find your</h1>
-            <h2 className="font-bigShouldersDisplay font-black text-fadedBlack text-5xl sm:text-6xl lg:text-7xl uppercase leading-none">next film</h2>
+        <div className="px-4 md:px-8 pt-12 pb-8">
+          <div className={`transition-all duration-700 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+            <h1 className="font-dmSerifDisplay text-fadedBlack text-4xl sm:text-5xl leading-[0.95]">find your next film</h1>
           </div>
         </div>
 
@@ -837,15 +864,17 @@ export default function SearchPage() {
         <div className="lg:hidden px-4 mb-4">
           <button
             onClick={() => setFiltersVisible((o) => !o)}
-            className={`flex items-center gap-2 border-2 px-4 py-2 font-black text-sm uppercase transition-colors ${
+            className={`flex items-center gap-2 border px-4 py-2.5 font-dmSans text-[10px] uppercase tracking-[0.12em] transition-colors ${
               filtersVisible
                 ? "bg-fadedBlack text-background border-fadedBlack"
-                : "bg-transparent text-fadedBlack border-fadedBlack/30 hover:bg-fadedBlack hover:text-background hover:border-fadedBlack"
+                : "bg-transparent text-fadedBlack/70 border-fadedBlack/15 hover:bg-backgroundSecondary"
             }`}
           >
-            <SlidersHorizontal size={16} strokeWidth={3} />
+            <SlidersHorizontal size={14} strokeWidth={2} />
             {filtersVisible ? "Hide Filters" : "Show Filters"}
-            {activeFilterCount > 0 && <span className="bg-fadedBlue text-background text-xs px-1.5 py-0.5 font-black">{activeFilterCount}</span>}
+            {activeFilterCount > 0 && (
+              <span className="bg-fadedBlue text-background text-[10px] tabular-nums px-1.5 py-0.5">{activeFilterCount}</span>
+            )}
           </button>
         </div>
 

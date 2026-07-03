@@ -124,11 +124,11 @@ export default function SpinPage() {
       <div className="min-h-screen bg-background flex flex-col">
         <Navbar isLoaded={isLoaded} currentPage="spin" />
         <div className="flex-1 flex items-center justify-center px-4">
-          <div className="text-center border border-fadedBlack/15 bg-background p-8">
-            <p className="text-fadedBlack font-black text-xl mb-4 uppercase">Error loading your movies</p>
+          <div className="text-center max-w-sm">
+            <h1 className="font-dmSerifDisplay text-3xl text-fadedBlack leading-tight mb-6">we couldn&apos;t load your movies</h1>
             <button
               onClick={() => router.push("/profile")}
-              className="bg-fadedBlack text-background px-6 py-3 font-black uppercase border-2 border-fadedBlack hover:bg-fadedBlue hover:border-fadedBlue transition-all"
+              className="font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack border border-fadedBlack px-6 py-3.5 hover:bg-fadedBlack hover:text-background transition-colors duration-200"
             >
               Back to Profile
             </button>
@@ -144,10 +144,9 @@ export default function SpinPage() {
 
       <div className="max-w-6xl mx-auto px-4 pt-4">
         {/* ── Header ── */}
-        <div className={`transition-all duration-1000 ${isLoaded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-20"} mb-10`}>
-          <h1 className="font-bigShouldersDisplay font-black text-fadedBlack text-5xl sm:text-6xl lg:text-7xl leading-none uppercase">spin</h1>
-          <h2 className="font-bigShouldersDisplay font-black text-fadedBlack text-5xl sm:text-6xl lg:text-7xl leading-none uppercase">the wheel</h2>
-          <p className="text-fadedBlack/60 text-sm font-bold mt-3">
+        <div className={`transition-all duration-700 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"} mb-10 pt-8`}>
+          <h1 className="font-dmSerifDisplay text-fadedBlack text-4xl sm:text-5xl leading-[0.95]">spin the wheel</h1>
+          <p className="font-dmSans text-fadedBlack/70 text-sm mt-4 tabular-nums">
             {savedMovies.length} {savedMovies.length === 1 ? "film" : "films"} to choose from
           </p>
         </div>
@@ -155,16 +154,16 @@ export default function SpinPage() {
         {savedMovies.length === 0 ? (
           // ── Empty state: nothing saved yet ──
           <div
-            className={`border border-fadedBlack/10 bg-background p-16 text-center transition-all duration-700 ${
+            className={`border-t border-fadedBlack/10 py-24 text-center transition-all duration-700 ${
               isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
             style={{ transitionDelay: "300ms" }}
           >
-            <p className="text-fadedBlack font-bigShouldersDisplay font-black text-2xl uppercase mb-2">Nothing to spin yet</p>
-            <p className="text-fadedBlack/60 font-bold mb-8 text-sm">Save a few films and the wheel will pick one for you</p>
+            <h3 className="font-dmSerifDisplay text-fadedBlack text-3xl leading-tight mb-3">the wheel is empty</h3>
+            <p className="font-dmSans text-fadedBlack/70 text-sm mb-8 max-w-xs mx-auto leading-relaxed">Save a few films and the wheel will pick one for you.</p>
             <button
               onClick={() => router.push("/")}
-              className="bg-fadedBlack text-background px-8 py-3 font-black uppercase border-2 border-fadedBlack hover:bg-fadedBlue hover:border-fadedBlue transition-all"
+              className="font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack border border-fadedBlack px-8 py-3.5 hover:bg-fadedBlack hover:text-background transition-colors duration-200"
             >
               Explore Movies
             </button>
@@ -202,13 +201,13 @@ export default function SpinPage() {
             />
 
             {/* ── Pool count + Spin ── */}
-            <div className="mt-6 flex flex-col items-center gap-4">
-              <p className="text-fadedBlack/60 text-sm font-bold">
+            <div className="mt-8 flex flex-col items-center gap-5">
+              <p className="font-dmSans text-fadedBlack/70 text-sm">
                 {candidatePool.length === 0 ? (
                   <span className="text-danger">No films match — loosen your filters</span>
                 ) : (
                   <>
-                    <span className="text-fadedBlack font-black">{candidatePool.length}</span>{" "}
+                    <span className="text-fadedBlack tabular-nums">{candidatePool.length}</span>{" "}
                     {candidatePool.length === 1 ? "film" : "films"} in the pool
                   </>
                 )}
@@ -217,7 +216,7 @@ export default function SpinPage() {
               <button
                 onClick={startSpin}
                 disabled={candidatePool.length === 0}
-                className="bg-fadedBlack text-background px-12 py-4 font-bigShouldersDisplay font-black text-2xl uppercase tracking-wider border-2 border-fadedBlack hover:bg-fadedBlue hover:border-fadedBlue transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-fadedBlack disabled:hover:border-fadedBlack"
+                className="bg-fadedBlack text-background px-14 py-4 font-bigShouldersDisplay text-xl uppercase tracking-[0.12em] border border-fadedBlack hover:bg-fadedBlue hover:border-fadedBlue transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-fadedBlack disabled:hover:border-fadedBlack"
               >
                 Spin
               </button>

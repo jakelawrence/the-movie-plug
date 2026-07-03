@@ -90,11 +90,11 @@ export default function Scenarios({ isLoaded }) {
               <button
                 onClick={() => router.push("/scenarios")}
                 aria-label={`Explore more scenarios`}
-                className="bg-fadedBlack border border-fadedBlack p-6 text-left transition-colors duration-200 hover:bg-fadedBlue hover:border-fadedBlue group w-full h-56 flex flex-col"
+                className="bg-fadedBlack border border-fadedBlack p-5 text-left transition-colors duration-200 hover:bg-fadedBlue hover:border-fadedBlue group w-full min-h-[140px] h-56 flex flex-col gap-2.5"
               >
-                <Search className="mb-3 text-background" size={40} strokeWidth={3} />
-                <h3 className="text-2xl sm:text-3xl font-black uppercase mb-2 text-background">All Scenarios</h3>
-                <p className="text-base sm:text-lg font-bold text-background">Browse every viewing mood</p>
+                <Search className="text-background" size={36} strokeWidth={2} />
+                <h3 className="font-bigShouldersDisplay text-sm uppercase tracking-[0.03em] text-background leading-tight">All Scenarios</h3>
+                <p className="font-dmSans text-xs text-background/70">Browse every viewing mood</p>
               </button>
             </div>
           </div>
@@ -122,7 +122,7 @@ export default function Scenarios({ isLoaded }) {
             >
               <scenario.icon size={36} strokeWidth={2.5} className="text-fadedBlack group-hover:text-background transition-colors" />
               <p className="font-bigShouldersDisplay text-fadedBlack text-sm uppercase tracking-[0.03em] group-hover:text-background transition-colors leading-tight">{scenario.label}</p>
-              <p className="font-dmSans font-normal text-fadedBlack/60 text-xs opacity-60 text-left group-hover:text-background/70 transition-colors">{scenario.description}</p>
+              <p className="font-dmSans font-normal text-fadedBlack/70 text-xs text-left group-hover:text-background/70 transition-colors">{scenario.description}</p>
             </button>
           );
         })}
@@ -130,7 +130,7 @@ export default function Scenarios({ isLoaded }) {
           <button
             onClick={() => router.push("/scenarios")}
             aria-label="Explore more scenarios"
-            className="font-dmSans font-black text-fadedBlack text-xs uppercase tracking-widest hover:text-fadedBlue transition-colors border-b border-fadedBlack hover:border-fadedBlue pb-0.5"
+            className="font-dmSans text-fadedBlack text-[10px] uppercase tracking-[0.12em] hover:text-fadedBlue transition-colors border-b border-fadedBlack hover:border-fadedBlue pb-0.5"
           >
             All Scenarios →
           </button>

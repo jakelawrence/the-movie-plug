@@ -25,9 +25,8 @@ export default function Scenarios() {
       <Navbar isLoaded={isLoaded} />
       <div className={`flex-1 transition-all duration-700 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
         <div className="px-6 sm:px-12 lg:px-20 pt-10 sm:pt-14 pb-10 sm:pb-12">
-          <div className={`transition-all duration-1000 ${isLoaded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-20"}`}>
-            <h1 className="font-bigShouldersDisplay font-black text-fadedBlack text-4xl sm:text-5xl lg:text-6xl uppercase leading-none">choose your</h1>
-            <h2 className="font-bigShouldersDisplay font-black text-fadedBlack text-4xl sm:text-5xl lg:text-6xl uppercase leading-none">scenario</h2>
+          <div className={`transition-all duration-700 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+            <h1 className="font-dmSerifDisplay text-fadedBlack text-4xl sm:text-5xl leading-[0.95]">choose your scenario</h1>
           </div>
         </div>
 
@@ -46,7 +45,7 @@ export default function Scenarios() {
                 <p className="font-bigShouldersDisplay text-fadedBlack text-base sm:text-lg uppercase group-hover:text-background transition-colors text-left leading-tight">
                   {scenario.label}
                 </p>
-                <p className="font-dmSans font-normal text-fadedBlack/60 text-xs sm:text-sm text-left group-hover:text-background/70 transition-colors leading-relaxed">
+                <p className="font-dmSans font-normal text-fadedBlack/70 text-xs sm:text-sm text-left group-hover:text-background/70 transition-colors leading-relaxed">
                   {scenario.description}
                 </p>
               </button>
