@@ -152,7 +152,7 @@ export default function LoginPage() {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
                 id={`${inputId}-name-${size}`}
-                className={`w-full font-dmSans text-fadedBlack placeholder-fadedBlack/65 border-2 border-fadedBlack/30 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-base" : "p-3 text-base"}`}
+                className={`w-full font-dmSans text-fadedBlack placeholder-fadedBlack/65 border-2 border-fadedBlack/50 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-base" : "p-3 text-base"}`}
                 placeholder="Your name"
               />
             </div>
@@ -168,7 +168,7 @@ export default function LoginPage() {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
               id={`${inputId}-email-${size}`}
-              className={`w-full font-dmSans text-fadedBlack placeholder-fadedBlack/65 border-2 border-fadedBlack/30 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-base" : "p-3 text-base"}`}
+              className={`w-full font-dmSans text-fadedBlack placeholder-fadedBlack/65 border-2 border-fadedBlack/50 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-base" : "p-3 text-base"}`}
               placeholder="your@email.com"
             />
           </div>
@@ -184,7 +184,7 @@ export default function LoginPage() {
               required
               minLength={loginMode === "signup" ? 8 : undefined}
               id={`${inputId}-password-${size}`}
-              className={`w-full font-dmSans text-fadedBlack placeholder-fadedBlack/65 border-2 border-fadedBlack/30 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-base" : "p-3 text-base"}`}
+              className={`w-full font-dmSans text-fadedBlack placeholder-fadedBlack/65 border-2 border-fadedBlack/50 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-base" : "p-3 text-base"}`}
               placeholder={loginMode === "signup" ? "At least 8 characters" : "Your password"}
             />
           </div>
@@ -200,7 +200,7 @@ export default function LoginPage() {
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 required
                 id={`${inputId}-confirm-${size}`}
-                className={`w-full font-dmSans text-fadedBlack placeholder-fadedBlack/65 border-2 border-fadedBlack/30 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-base" : "p-3 text-base"}`}
+                className={`w-full font-dmSans text-fadedBlack placeholder-fadedBlack/65 border-2 border-fadedBlack/50 bg-background focus:outline-none focus:border-fadedBlack/70 transition-colors ${isLg ? "p-4 text-base" : "p-3 text-base"}`}
                 placeholder="Re-enter password"
               />
             </div>

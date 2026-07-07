@@ -30,10 +30,13 @@ function matchesDuration(duration, durationKeys) {
   });
 }
 
-// Filter a list of movies by vibes, genres, minimum rating, and runtime buckets.
-// All provided dimensions must match (AND); within genres/durations, any selected
-// value matches (OR).
-export function applyFilters(movies, { vibes = [], genres = [], ratingMin = 0, durationKeys = [] } = {}) {
+// Filter a list of movies by vibes, genres, minimum rating, runtime buckets, and
+// streaming services. All provided dimensions must match (AND); within
+// genres/durations/services, any selected value matches (OR). When serviceIds is
+// null/empty the streaming dimension is skipped — mirrors the server-side
+// filterByStreamingServices so /spin and search agree.
+export function applyFilters(movies, { vibes = [], genres = [], ratingMin = 0, durationKeys = [], serviceIds = null } = {}) {
+  const serviceIdSet = serviceIds && serviceIds.length > 0 ? new Set(serviceIds.map(Number)) : null;
   return movies.filter((m) => {
     // Vibe filters (all selected must match)
     for (const key of vibes) {
@@ -56,6 +59,12 @@ export function applyFilters(movies, { vibes = [], genres = [], ratingMin = 0, d
 
     // Runtime buckets
     if (!matchesDuration(m.duration, durationKeys)) return false;
+
+    // Streaming services — movie must be available on at least one selected service.
+    if (serviceIdSet) {
+      const providers = m.streamingProviders || [];
+      if (!providers.some((p) => serviceIdSet.has(Number(p.providerId)))) return false;
+    }
 
     return true;
   });

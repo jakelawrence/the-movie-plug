@@ -11,7 +11,7 @@ export default function Footer() {
 
   const NAV_LINKS = [
     { label: "Home", href: "/" },
-    { label: "Search", href: "/search" },
+    { label: "Discover", href: "/discover" },
     { label: "Saved Movies", href: "/profile/saved-movies" },
     ...(!isAuthenticated ? [{ label: "Sign In/Up", href: "/login" }] : []),
   ];
@@ -76,7 +76,7 @@ export default function Footer() {
             <p className="font-dmSans text-fadedBlack/70 text-[9px] uppercase tracking-[0.22em] mb-4">Get Started</p>
             <p className="font-dmSerifDisplay text-fadedBlack text-2xl leading-snug mb-6">Find something to watch tonight.</p>
             <button
-              onClick={() => router.push("/search")}
+              onClick={() => router.push("/discover")}
               className="w-full bg-fadedBlack text-background border border-fadedBlack py-3.5 px-6 font-dmSans text-[10px] uppercase tracking-[0.12em] hover:bg-fadedBlue hover:border-fadedBlue transition-colors duration-150"
             >
               Start Exploring →

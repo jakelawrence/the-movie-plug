@@ -193,8 +193,8 @@ This system is flat by default. Surfaces sit directly on the paper, separated by
 - **Internal Padding:** ~20px (`p-5`); 24px on larger surfaces.
 
 ### Inputs / Fields
-- **Style:** Paper background, 2px ink/30 border, square corners, bold DM Sans text, ink/65 placeholder (kept above the 4.5:1 floor).
-- **Focus:** Border deepens to ink/60 (`focus:border-fadedBlack/60`); no glow. The autocomplete dropdown is a square paper panel with a hairless top border, ink/30 sides, rows divided by ink/10 hairlines, hovered rows tint to paper-secondary.
+- **Style:** Paper background, 2px ink/50 border, square corners, bold DM Sans text, ink/65 placeholder (kept above the 4.5:1 floor). The ink/50 border clears the 3:1 non-text-contrast floor (WCAG 2.1 AA, 1.4.11) so the field boundary is perceivable; a lighter border fails it.
+- **Focus:** Border deepens to ink/70 (`focus:border-fadedBlack/70`); no glow. The autocomplete dropdown is a square paper panel with a hairless top border, ink/50 sides, rows divided by ink/10 hairlines, hovered rows tint to paper-secondary.
 - **Placeholder contrast:** Keep placeholder legible — do not let it fall below the 4.5:1 body-contrast floor on cream.
 
 ### Navigation

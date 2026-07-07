@@ -9,15 +9,32 @@ import React, { useEffect, useRef, useMemo, useState } from "react";
 
 const upsize = (url) => url?.replace("-0-70-0-105-", "-0-1000-0-1500-") || url;
 
-const pick = (pool) => pool[Math.floor(Math.random() * pool.length)];
+const sameMovie = (a, b) => a?.slug != null && a.slug === b?.slug;
+
+// Pick a random poster from the pool that isn't any of the `avoid` movies, so the
+// reel never shows the same poster twice in a row. With a tiny pool a repeat may
+// be unavoidable — bail after a few tries rather than loop forever.
+function pickAvoiding(pool, ...avoid) {
+  for (let tries = 0; tries < 12; tries++) {
+    const choice = pool[Math.floor(Math.random() * pool.length)];
+    if (!avoid.some((m) => sameMovie(choice, m))) return choice;
+  }
+  return pool[Math.floor(Math.random() * pool.length)];
+}
 
 // Build the reel: `landingIndex` filler posters, then the winner, then a few
-// buffer posters so the column never bottoms out mid-animation.
+// buffer posters so the column never bottoms out mid-animation. Each cell avoids
+// its neighbor (and the winner avoids the cell before it) so no poster repeats
+// back-to-back.
 function buildReel(pool, winner, landingIndex) {
   const items = [];
-  for (let i = 0; i < landingIndex; i++) items.push(pick(pool));
+  for (let i = 0; i < landingIndex; i++) {
+    // The cell right before the winner must differ from the winner too.
+    const avoid = i === landingIndex - 1 ? [items[i - 1], winner] : [items[i - 1]];
+    items.push(pickAvoiding(pool, ...avoid));
+  }
   items[landingIndex] = winner;
-  for (let i = 0; i < 3; i++) items.push(pick(pool));
+  for (let i = 0; i < 3; i++) items.push(pickAvoiding(pool, items[items.length - 1]));
   return items;
 }
 

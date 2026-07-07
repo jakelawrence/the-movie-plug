@@ -1,7 +1,8 @@
-import { Search, Loader2 } from "lucide-react";
+import { Search } from "lucide-react";
 import { React, useRef, useState, useEffect, useId } from "react";
 import { useRouter } from "next/navigation";
 import { FALLBACK_POSTER_URL, getPosterUrl } from "../utils/posters";
+import Loading from "./Loading";
 
 function countNormalizedSearchCharacters(value) {
   return String(value || "")
@@ -97,7 +98,7 @@ export const SearchBar = ({ disabled }) => {
 
   const handleSearchMovie = (movie) => {
     // Route to search results page with movie query parameter and fromSearch flag
-    router.push(`/search?movie=${encodeURIComponent(movie.slug)}&fromSearch=true`);
+    router.push(`/discover?movie=${encodeURIComponent(movie.slug)}&fromSearch=true`);
   };
 
   const handlePosterLoad = (movieSlug) => {
@@ -132,16 +133,13 @@ export const SearchBar = ({ disabled }) => {
           aria-expanded={showDropdown && searchResults.length > 0}
           aria-autocomplete="list"
           aria-describedby={searchError ? `${inputId}-error` : undefined}
-          className={`w-full px-4 sm:px-6 py-3 sm:py-4 border-2 border-fadedBlack/30 bg-background text-fadedBlack placeholder-fadedBlack/65 font-bold text-base sm:text-lg outline-none focus:border-fadedBlack/60 transition-all ${
+          className={`w-full px-4 sm:px-6 py-3 sm:py-4 border-2 border-fadedBlack/50 bg-background text-fadedBlack placeholder-fadedBlack/65 font-bold text-base sm:text-lg outline-none focus:border-fadedBlack/70 transition-all ${
             disabled ? "opacity-50 pointer-events-none" : ""
           }`}
         />
         {isSearching ? (
           <div className="absolute right-4 top-1/2 -translate-y-1/2">
-            <Loader2
-              className={`text-fadedBlack animate-spin w-5 h-5 sm:w-6 sm:h-6 ${disabled ? "opacity-50 pointer-events-none" : ""}`}
-              strokeWidth={3}
-            />
+            <Loading size={22} className={disabled ? "opacity-50 pointer-events-none" : ""} />
           </div>
         ) : (
           <Search
@@ -160,7 +158,7 @@ export const SearchBar = ({ disabled }) => {
           id={listboxId}
           role="listbox"
           aria-label="Movie search results"
-          className={`absolute top-full left-0 w-full border-2 border-t-0 border-fadedBlack/30 bg-background overflow-y-auto max-h-[420px] z-50 ${
+          className={`absolute top-full left-0 w-full border-2 border-t-0 border-fadedBlack/50 bg-background overflow-y-auto max-h-[420px] z-50 ${
             disabled ? "opacity-50 pointer-events-none" : ""
           }`}
         >

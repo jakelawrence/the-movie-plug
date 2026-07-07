@@ -42,9 +42,9 @@ function RatingStars({ min, setMin }) {
   );
 }
 
-export function SpinFilters({ genres, filters, onToggleGenre, onToggleVibe, onToggleDuration, onSetRatingMin, onClear }) {
-  const { vibes, genres: activeGenres, ratingMin, durationKeys } = filters;
-  const activeCount = vibes.length + activeGenres.length + durationKeys.length + (ratingMin > 0 ? 1 : 0);
+export function SpinFilters({ genres, filters, hasServices, onToggleGenre, onToggleVibe, onToggleDuration, onSetRatingMin, onToggleOnlyMyServices, onClear }) {
+  const { vibes, genres: activeGenres, ratingMin, durationKeys, onlyMyServices } = filters;
+  const activeCount = vibes.length + activeGenres.length + durationKeys.length + (ratingMin > 0 ? 1 : 0) + (onlyMyServices ? 1 : 0);
 
   return (
     <div className="bg-background border border-fadedBlack/10 p-5 space-y-5">
@@ -84,6 +84,27 @@ export function SpinFilters({ genres, filters, onToggleGenre, onToggleVibe, onTo
       <div>
         <p className="font-dmSans text-[9px] text-fadedBlack/70 uppercase tracking-[0.22em] mb-3">Minimum Rating</p>
         <RatingStars min={ratingMin} setMin={onSetRatingMin} />
+      </div>
+
+      {/* Streaming services */}
+      <div className="border-t border-fadedBlack/10 pt-5">
+        <label
+          className={`flex items-center gap-3 font-dmSans text-[10px] uppercase tracking-[0.18em] ${
+            hasServices ? "text-fadedBlack/70 cursor-pointer" : "text-fadedBlack/40 cursor-not-allowed"
+          }`}
+        >
+          <input
+            type="checkbox"
+            className="h-4 w-4 accent-fadedBlack"
+            checked={onlyMyServices}
+            onChange={onToggleOnlyMyServices}
+            disabled={!hasServices}
+          />
+          Only pick movies on my services
+        </label>
+        {!hasServices && (
+          <p className="mt-2 font-dmSans text-[10px] text-fadedBlack/50">Add streaming services in your profile to use this.</p>
+        )}
       </div>
 
       {/* Clear all */}

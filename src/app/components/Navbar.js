@@ -35,12 +35,12 @@ export function Navbar({ isLoaded, currentPage }) {
             {/* Desktop nav links */}
             <div className="hidden md:flex items-center gap-8">
               <button
-                onClick={() => router.push("/search")}
+                onClick={() => router.push("/discover")}
                 className={`font-dmSans font-normal text-sm tracking-wide text-fadedBlack hover:opacity-40 transition-opacity cursor-pointer ${
-                  currentPage === "search" ? "opacity-40" : ""
+                  currentPage === "discover" ? "opacity-40" : ""
                 }`}
               >
-                search
+                discover
               </button>
               <button
                 onClick={() => router.push("/scenarios")}
@@ -124,7 +124,7 @@ export function Navbar({ isLoaded, currentPage }) {
         >
           <div className="h-full flex flex-col">
             <div className="flex flex-col gap-7">
-              {["search", "scenarios", "spin", "profile"].map((page) => (
+              {["discover", "scenarios", "spin", "profile"].map((page) => (
                 <button
                   key={page}
                   onClick={() => {
