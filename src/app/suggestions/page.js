@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, Suspense, useRef } from "react";
-import { Bookmark, X, Loader2 } from "lucide-react";
+import { Bookmark, X } from "lucide-react";
 import { useMovieCollection } from "../context/MovieCollectionContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "../hooks/useAuth";

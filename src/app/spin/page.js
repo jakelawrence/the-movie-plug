@@ -19,10 +19,11 @@ export default function SpinPage() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [savedMovies, setSavedMovies] = useState([]);
+  const [myServices, setMyServices] = useState([]); // provider IDs the user has saved
   const [error, setError] = useState(null);
 
   // Filter state — drives the candidate pool the wheel picks from.
-  const [filters, setFilters] = useState({ vibes: [], genres: [], ratingMin: 0, durationKeys: [] });
+  const [filters, setFilters] = useState({ vibes: [], genres: [], ratingMin: 0, durationKeys: [], onlyMyServices: false });
 
   // Spin state machine: "idle" → "spinning" → "result".
   const [phase, setPhase] = useState("idle");
@@ -33,6 +34,7 @@ export default function SpinPage() {
   useEffect(() => {
     setIsLoaded(true);
     loadSavedMovies();
+    loadMyServices();
   }, []);
 
   // ─── Filter handlers ─────────────────────────────────────────────────────────
@@ -46,10 +48,14 @@ export default function SpinPage() {
   const toggleVibe = (v) => toggleInArray("vibes", v);
   const toggleDuration = (d) => toggleInArray("durationKeys", d);
   const setRatingMin = (val) => setFilters((prev) => ({ ...prev, ratingMin: val }));
-  const clearFilters = () => setFilters({ vibes: [], genres: [], ratingMin: 0, durationKeys: [] });
+  const toggleOnlyMyServices = () => setFilters((prev) => ({ ...prev, onlyMyServices: !prev.onlyMyServices }));
+  const clearFilters = () => setFilters({ vibes: [], genres: [], ratingMin: 0, durationKeys: [], onlyMyServices: false });
 
   const allGenres = useMemo(() => collectGenres(savedMovies), [savedMovies]);
-  const candidatePool = useMemo(() => applyFilters(savedMovies, filters), [savedMovies, filters]);
+  const candidatePool = useMemo(
+    () => applyFilters(savedMovies, { ...filters, serviceIds: filters.onlyMyServices ? myServices : null }),
+    [savedMovies, filters, myServices],
+  );
 
   // ─── Spin handlers ───────────────────────────────────────────────────────────
   const startSpin = () => {
@@ -84,6 +90,20 @@ export default function SpinPage() {
       }
     } catch (e) {
       console.error(e);
+    }
+  };
+
+  // The user's saved streaming services power the "only my services" filter.
+  // Failure is non-fatal — the toggle just stays disabled with no services.
+  const loadMyServices = async () => {
+    try {
+      const res = await fetch("/api/user/streaming-services");
+      if (res.ok) {
+        const data = await res.json();
+        setMyServices(Array.isArray(data.streamingServices) ? data.streamingServices : []);
+      }
+    } catch (err) {
+      console.error("Failed to load streaming services:", err);
     }
   };
 
@@ -193,10 +213,12 @@ export default function SpinPage() {
             <SpinFilters
               genres={allGenres}
               filters={filters}
+              hasServices={myServices.length > 0}
               onToggleGenre={toggleGenre}
               onToggleVibe={toggleVibe}
               onToggleDuration={toggleDuration}
               onSetRatingMin={setRatingMin}
+              onToggleOnlyMyServices={toggleOnlyMyServices}
               onClear={clearFilters}
             />
 
@@ -233,6 +255,7 @@ export default function SpinPage() {
           onToggleSave={() => handleRemoveMovie(detailsMovie.slug)}
           isSaved={true}
           canSave={true}
+          myServiceIds={myServices}
         />
       )}
     </div>

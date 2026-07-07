@@ -334,7 +334,7 @@ export async function POST(req) {
       console.log(`Filtered from ${beforeCount} to ${afterCount} movies by streaming services`);
     }
 
-    recommendations = recommendations.slice(0, 50).map(stripInternalRecommendationFields); // Return more for /search page
+    recommendations = recommendations.slice(0, 50).map(stripInternalRecommendationFields); // Return more for /discover page
     console.log(`Final recommendation count after all filters: ${recommendations.length}`);
     console.log(
       "Final recommendations:",

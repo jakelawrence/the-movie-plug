@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, useId } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SEARCH_FILTERS } from "../api/lib/search-filters";
-import { Search, X, Loader2, ChevronDown, ChevronUp, ChevronRight, Star, Bookmark, BookmarkCheck, SlidersHorizontal } from "lucide-react";
+import { Search, X, ChevronDown, ChevronUp, ChevronRight, Star, Bookmark, BookmarkCheck, SlidersHorizontal } from "lucide-react";
+import Loading from "../components/Loading";
 import { Navbar } from "../components/Navbar";
 import { useAuth } from "../hooks/useAuth";
 import { MovieDetailsModal } from "../components/MovieDetailsModal";
@@ -121,10 +122,10 @@ function MovieSearchInput({ placeholder, onSelect, excludeSlugs = [], accentColo
           aria-controls={listboxId}
           aria-expanded={open && results.length > 0}
           aria-autocomplete="list"
-          className="w-full px-4 py-3 border-2 border-fadedBlack/30 bg-background text-fadedBlack font-dmSans text-sm placeholder-fadedBlack/65 outline-none focus:border-fadedBlack/60 transition-colors pr-10"
+          className="w-full px-4 py-3 border-2 border-fadedBlack/50 bg-background text-fadedBlack font-dmSans text-sm placeholder-fadedBlack/65 outline-none focus:border-fadedBlack/70 transition-colors pr-10"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 text-fadedBlack/40 pointer-events-none">
-          {loading ? <Loader2 size={18} strokeWidth={2} className="animate-spin" /> : <Search size={18} strokeWidth={2} />}
+          {loading ? <Loading size={18} /> : <Search size={18} strokeWidth={2} />}
         </div>
       </div>
 
@@ -134,7 +135,7 @@ function MovieSearchInput({ placeholder, onSelect, excludeSlugs = [], accentColo
           id={listboxId}
           role="listbox"
           aria-label="Movie search results"
-          className="absolute top-full left-0 w-full border-2 border-t-0 border-fadedBlack/30 bg-background z-40 max-h-72 overflow-y-auto"
+          className="absolute top-full left-0 w-full border-2 border-t-0 border-fadedBlack/50 bg-background z-40 max-h-72 overflow-y-auto"
         >
           {results.map((movie, i) => (
             <button
@@ -406,7 +407,7 @@ function EmptyState({ hasInputMovies }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export default function SearchPage() {
+export default function DiscoverPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
@@ -432,6 +433,7 @@ export default function SearchPage() {
   const [hasSearched, setHasSearched] = useState(false);
   const [savedSlugs, setSavedSlugs] = useState(new Set());
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [myServiceIds, setMyServiceIds] = useState([]); // provider IDs the user subscribes to
 
   // Mobile filter panel toggle
   const [filtersVisible, setFiltersVisible] = useState(false);
@@ -440,6 +442,30 @@ export default function SearchPage() {
   useEffect(() => {
     setIsLoaded(true);
   }, []);
+
+  // Load the user's streaming services so the details modal can highlight the
+  // ones they subscribe to. Failure is non-fatal — the modal just falls back to
+  // a plain "Available On" list.
+  useEffect(() => {
+    if (!user?.username) {
+      setMyServiceIds([]);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/user/streaming-services");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled) setMyServiceIds(Array.isArray(data.streamingServices) ? data.streamingServices : []);
+      } catch (err) {
+        console.error("Failed to load streaming services:", err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.username]);
 
   useEffect(() => {
     const parseList = (value) =>
@@ -522,7 +548,7 @@ export default function SearchPage() {
       if (minRating > 0) params.set("minRating", String(minRating));
       if (hasSearched && inputMovies.length > 0) params.set("fromSearch", "true");
       const searchQuery = params.toString();
-      const returnTo = searchQuery ? `/search?${searchQuery}` : "/search";
+      const returnTo = searchQuery ? `/discover?${searchQuery}` : "/discover";
       router.push(`/login?returnTo=${encodeURIComponent(returnTo)}`);
       return;
     }
@@ -659,7 +685,7 @@ export default function SearchPage() {
     >
       {isSearching ? (
         <>
-          <Loader2 size={15} strokeWidth={2} className="animate-spin" /> Searching…
+          <Loading size={15} variant="light" /> Searching…
         </>
       ) : (
         <>
@@ -833,7 +859,7 @@ export default function SearchPage() {
       ) : isSearching ? (
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <Loader2 size={32} strokeWidth={2} className="text-fadedBlack/50 animate-spin mx-auto mb-4" />
+            <Loading size={40} className="mx-auto mb-4" />
             <p className="font-dmSans text-fadedBlack/70 uppercase text-[9px] tracking-[0.22em]">Finding films…</p>
           </div>
         </div>
@@ -860,13 +886,14 @@ export default function SearchPage() {
         }}
         isSaved={selectedMovie ? savedSlugs.has(selectedMovie.slug) : false}
         canSave={!!user?.username}
+        myServiceIds={myServiceIds}
       />
     </div>
   );
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Navbar isLoaded={isLoaded} currentPage="search" />
+      <Navbar isLoaded={isLoaded} currentPage="discover" />
 
       <div className={`flex-1 transition-all duration-700 ${isLoaded ? "opacity-100" : "opacity-0"}`}>
         {/* Page header */}

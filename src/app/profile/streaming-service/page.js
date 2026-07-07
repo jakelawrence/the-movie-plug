@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
+import Loading from "../../components/Loading";
 import AuthModal from "../../components/AuthModal";
 import { Navbar } from "../../components/Navbar";
 
@@ -75,7 +75,7 @@ export default function StreamingServicesPage() {
 
   useEffect(() => {
     if (providers.length > 0 && selectedServices.length > 0) {
-      const freeServiceIds = providers.filter((p) => p.type === "free").map((s) => s.id);
+      const freeServiceIds = providers.filter((p) => p.type === "free" || p.type === "ads").map((s) => s.id);
       const allFreeSelected = freeServiceIds.length > 0 && freeServiceIds.every((id) => selectedServices.includes(id));
       setSelectAllFree(allFreeSelected);
     }
@@ -137,7 +137,7 @@ export default function StreamingServicesPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="animate-spin mx-auto mb-4 text-fadedBlack/50" size={28} strokeWidth={2} />
+          <Loading size={40} className="mx-auto mb-4" />
           <p className="font-dmSans text-[9px] uppercase tracking-[0.22em] text-fadedBlack/70">Loading</p>
         </div>
       </div>
@@ -214,7 +214,7 @@ export default function StreamingServicesPage() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-4">
             {providers
-              .filter((p) => p.type === "free")
+              .filter((p) => p.type === "free" || p.type === "ads")
               .map((service) => {
                 const isSelected = selectedServices.includes(service.id);
                 return (

@@ -212,7 +212,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                   id={`${inputId}-name`}
-                  className="w-full border-2 border-fadedBlack/30 bg-background p-3 text-base font-dmSans text-fadedBlack placeholder-fadedBlack/65 focus:outline-none focus:border-fadedBlack/70 transition-colors"
+                  className="w-full border-2 border-fadedBlack/50 bg-background p-3 text-base font-dmSans text-fadedBlack placeholder-fadedBlack/65 focus:outline-none focus:border-fadedBlack/70 transition-colors"
                   placeholder="Your name"
                 />
               </div>
@@ -228,7 +228,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
                 id={`${inputId}-email`}
-                className="w-full border-2 border-fadedBlack/30 bg-background p-3 text-base font-dmSans text-fadedBlack placeholder-fadedBlack/65 focus:outline-none focus:border-fadedBlack/70 transition-colors"
+                className="w-full border-2 border-fadedBlack/50 bg-background p-3 text-base font-dmSans text-fadedBlack placeholder-fadedBlack/65 focus:outline-none focus:border-fadedBlack/70 transition-colors"
                 placeholder="your@email.com"
               />
             </div>
@@ -244,7 +244,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                 required
                 minLength={mode === "signup" ? 8 : undefined}
                 id={`${inputId}-password`}
-                className="w-full border-2 border-fadedBlack/30 bg-background p-3 text-base font-dmSans text-fadedBlack placeholder-fadedBlack/65 focus:outline-none focus:border-fadedBlack/70 transition-colors"
+                className="w-full border-2 border-fadedBlack/50 bg-background p-3 text-base font-dmSans text-fadedBlack placeholder-fadedBlack/65 focus:outline-none focus:border-fadedBlack/70 transition-colors"
                 placeholder={mode === "signup" ? "At least 8 characters" : "Your password"}
               />
             </div>
@@ -260,7 +260,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   required
                   id={`${inputId}-confirm`}
-                  className="w-full border-2 border-fadedBlack/30 bg-background p-3 text-base font-dmSans text-fadedBlack placeholder-fadedBlack/65 focus:outline-none focus:border-fadedBlack/70 transition-colors"
+                  className="w-full border-2 border-fadedBlack/50 bg-background p-3 text-base font-dmSans text-fadedBlack placeholder-fadedBlack/65 focus:outline-none focus:border-fadedBlack/70 transition-colors"
                   placeholder="Re-enter password"
                 />
               </div>

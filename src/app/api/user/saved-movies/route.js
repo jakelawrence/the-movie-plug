@@ -40,11 +40,15 @@ export async function GET() {
 
     const savedMovieData = await getUserSavedMovies(user.username);
     const savedMovieSlugs = savedMovieData?.savedMovies || [];
+    const savedAtBySlug = savedMovieData?.savedAtBySlug || {};
 
     if (savedMovieSlugs.length > 0) {
       const movies = await getMovies(savedMovieSlugs);
       const sortedMovies = savedMovieSlugs
-        .map((slug) => movies.get(slug))
+        .map((slug) => {
+          const movie = movies.get(slug);
+          return movie ? { ...movie, savedAt: savedAtBySlug[slug] ?? null } : null;
+        })
         .filter(Boolean);
 
       return NextResponse.json({

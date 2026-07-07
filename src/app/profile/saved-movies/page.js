@@ -325,6 +325,7 @@ export default function SavedMoviesPage() {
   const [error, setError] = useState(null);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [myServiceIds, setMyServiceIds] = useState([]); // provider IDs the user subscribes to
 
   // Sort state
   const [sortKey, setSortKey] = useState("savedAt");
@@ -338,7 +339,21 @@ export default function SavedMoviesPage() {
   useEffect(() => {
     setIsLoaded(true);
     loadSavedMovies();
+    loadMyServices();
   }, []);
+
+  // The user's saved streaming services let the details modal highlight the ones
+  // they subscribe to. Failure is non-fatal — the modal falls back to a plain list.
+  const loadMyServices = async () => {
+    try {
+      const res = await fetch("/api/user/streaming-services");
+      if (!res.ok) return;
+      const data = await res.json();
+      setMyServiceIds(Array.isArray(data.streamingServices) ? data.streamingServices : []);
+    } catch (err) {
+      console.error("Failed to load streaming services:", err);
+    }
+  };
 
   const loadSavedMovies = async () => {
     try {
@@ -607,6 +622,7 @@ export default function SavedMoviesPage() {
           onToggleSave={() => handleRemoveMovie(selectedMovie.slug)}
           isSaved={true}
           canSave={true}
+          myServiceIds={myServiceIds}
         />
       )}
     </div>

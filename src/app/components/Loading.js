@@ -1,10 +1,22 @@
 import React from "react";
 import Image from "next/image";
 
-export default function Loading() {
+// Black eye by default (for light surfaces). Pass `variant="light"` to use the
+// white eye on dark backgrounds so the spinner stays visible.
+export default function Loading({ size = 50, variant = "dark", className = "" }) {
+  const src = variant === "light" ? "/images/eye-white.png" : "/images/eye-black.png";
+
   return (
-    <div className="animate-spin">
-      <Image src="/images/eye-white.png" alt="Logo" width={50} height={50} className="mx-auto" />
-    </div>
+    <Image
+      src={src}
+      alt="Loading"
+      role="status"
+      aria-label="Loading"
+      width={size}
+      height={size}
+      priority
+      className={`animate-spin ${className}`}
+      style={{ width: size, height: size }}
+    />
   );
 }
