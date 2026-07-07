@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef, useId } from "react";
 import { useRouter } from "next/navigation";
 import { Heart, ThumbsUp, Trash2, Star, Clock, Calendar, ChevronUp, ChevronDown, ChevronRight, X, SlidersHorizontal } from "lucide-react";
 import { Navbar } from "../../components/Navbar";
@@ -53,19 +53,155 @@ function applySort(movies, sortKey, dir) {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function SortButton({ label, active, direction, onClick }) {
+// Human-readable words for each sort direction, so the arrow is never ambiguous.
+const DIRECTION_LABELS = {
+  savedAt: { desc: "Newest", asc: "Oldest" },
+  year: { desc: "Newest", asc: "Oldest" },
+  duration: { desc: "Longest", asc: "Shortest" },
+  averageRating: { desc: "Highest", asc: "Lowest" },
+  popularity: { asc: "Most popular", desc: "Least popular" },
+  darkness: { desc: "Most", asc: "Least" },
+  intensity: { desc: "Most", asc: "Least" },
+  funniness: { desc: "Most", asc: "Least" },
+};
+
+function directionWord(key, dir) {
+  return DIRECTION_LABELS[key]?.[dir] ?? (dir === "asc" ? "Ascending" : "Descending");
+}
+
+// Single-select sort: a field menu + a direction toggle. Two quiet controls
+// replace the eight-chip cloud — sorting is one choice, not eight switches.
+function SortControl({ sortKey, sortDir, onSelectKey, onToggleDir }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+  const menuRef = useRef(null);
+  const triggerRef = useRef(null);
+  const listId = useId();
+
+  const activeOpt = SORT_OPTIONS.find((o) => o.key === sortKey);
+  const DirIcon = sortDir === "asc" ? ChevronUp : ChevronDown;
+
+  // Close on outside click or Escape.
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  // Move focus onto the current option when the menu opens.
+  useEffect(() => {
+    if (!open) return;
+    const el = menuRef.current?.querySelector('[data-active="true"]') || menuRef.current?.querySelector('[role="option"]');
+    el?.focus();
+  }, [open]);
+
+  const handleMenuKeyDown = (e) => {
+    const items = Array.from(menuRef.current?.querySelectorAll('[role="option"]') ?? []);
+    if (!items.length) return;
+    const idx = items.indexOf(document.activeElement);
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      items[(idx + 1) % items.length]?.focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      items[(idx - 1 + items.length) % items.length]?.focus();
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      items[0]?.focus();
+    } else if (e.key === "End") {
+      e.preventDefault();
+      items[items.length - 1]?.focus();
+    }
+  };
+
+  const selectKey = (key) => {
+    onSelectKey(key); // toggles direction when the key is already active
+    setOpen(false);
+    triggerRef.current?.focus();
+  };
+
   return (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-1 px-3 py-2 border font-dmSans text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
-        active ? "bg-fadedBlack text-background border-fadedBlack" : "bg-background text-fadedBlack/70 border-fadedBlack/15 hover:bg-backgroundSecondary"
-      }`}
-    >
-      {label}
-      {active && (
-        <span className="ml-0.5">{direction === "asc" ? <ChevronUp size={13} strokeWidth={2} /> : <ChevronDown size={13} strokeWidth={2} />}</span>
+    <div ref={wrapRef} className="relative">
+      <div className="flex items-stretch">
+        {/* Field menu trigger */}
+        <button
+          ref={triggerRef}
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-controls={open ? listId : undefined}
+          className="flex items-center gap-2.5 border border-fadedBlack/15 bg-background pl-3 pr-2.5 py-2 hover:bg-backgroundSecondary transition-colors duration-150"
+        >
+          <span className="font-dmSans text-[9px] uppercase tracking-[0.22em] text-fadedBlack/50 leading-none">Sort</span>
+          <span className="font-dmSans text-[13px] text-fadedBlack leading-none">{activeOpt?.label}</span>
+          <ChevronDown size={14} strokeWidth={2} className={`text-fadedBlack/50 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+        </button>
+
+        {/* Direction toggle */}
+        <button
+          type="button"
+          onClick={onToggleDir}
+          aria-label={`Sort order: ${directionWord(sortKey, sortDir)} first. Activate to reverse.`}
+          className="flex items-center gap-1.5 border border-l-0 border-fadedBlack/15 bg-background px-2.5 py-2 hover:bg-backgroundSecondary transition-colors duration-150"
+        >
+          <span className="font-dmSans text-[11px] text-fadedBlack/70 leading-none">{directionWord(sortKey, sortDir)}</span>
+          <DirIcon size={14} strokeWidth={2} className="text-fadedBlack" />
+        </button>
+      </div>
+
+      {/* Field menu */}
+      {open && (
+        <ul
+          ref={menuRef}
+          id={listId}
+          role="listbox"
+          aria-label="Sort films by"
+          onKeyDown={handleMenuKeyDown}
+          className="absolute top-full left-0 mt-1.5 min-w-[15rem] bg-background border border-fadedBlack/30 divide-y divide-fadedBlack/10 z-50 animate-dropdown-in origin-top"
+        >
+          {SORT_OPTIONS.map((opt) => {
+            const isActive = opt.key === sortKey;
+            const OptDirIcon = sortDir === "asc" ? ChevronUp : ChevronDown;
+            return (
+              <li key={opt.key} role="none">
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={isActive}
+                  data-active={isActive}
+                  onClick={() => selectKey(opt.key)}
+                  className={`w-full flex items-center justify-between gap-4 px-4 py-2.5 text-left transition-colors duration-100 ${
+                    isActive ? "bg-backgroundSecondary" : "hover:bg-backgroundSecondary/60"
+                  }`}
+                >
+                  <span className={`font-dmSans text-[13px] leading-none ${isActive ? "text-fadedBlack" : "text-fadedBlack/70"}`}>{opt.label}</span>
+                  {isActive && (
+                    <span className="flex items-center gap-1 font-dmSans text-[10px] uppercase tracking-[0.1em] text-fadedBlack/55">
+                      {directionWord(opt.key, sortDir)}
+                      <OptDirIcon size={12} strokeWidth={2} />
+                    </span>
+                  )}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       )}
-    </button>
+    </div>
   );
 }
 
@@ -189,6 +325,7 @@ export default function SavedMoviesPage() {
   const [error, setError] = useState(null);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [myServiceIds, setMyServiceIds] = useState([]); // provider IDs the user subscribes to
 
   // Sort state
   const [sortKey, setSortKey] = useState("savedAt");
@@ -202,7 +339,21 @@ export default function SavedMoviesPage() {
   useEffect(() => {
     setIsLoaded(true);
     loadSavedMovies();
+    loadMyServices();
   }, []);
+
+  // The user's saved streaming services let the details modal highlight the ones
+  // they subscribe to. Failure is non-fatal — the modal falls back to a plain list.
+  const loadMyServices = async () => {
+    try {
+      const res = await fetch("/api/user/streaming-services");
+      if (!res.ok) return;
+      const data = await res.json();
+      setMyServiceIds(Array.isArray(data.streamingServices) ? data.streamingServices : []);
+    } catch (err) {
+      console.error("Failed to load streaming services:", err);
+    }
+  };
 
   const loadSavedMovies = async () => {
     try {
@@ -311,16 +462,20 @@ export default function SavedMoviesPage() {
         </div>
 
         {/* ── Controls bar ── */}
+        {/* relative z-20 keeps the sort menu above the movie grid: the grid's own
+            entrance transform creates a stacking context that would otherwise paint over it. */}
         <div
-          className={`transition-all duration-700 mb-8 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          className={`relative z-20 transition-all duration-700 mb-8 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
           style={{ transitionDelay: "150ms" }}
         >
           {/* Top row: Sort + Filter toggle */}
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="font-dmSans text-[9px] text-fadedBlack/70 uppercase tracking-[0.22em] mr-1">Sort</span>
-            {SORT_OPTIONS.map((opt) => (
-              <SortButton key={opt.key} label={opt.label} active={sortKey === opt.key} direction={sortDir} onClick={() => handleSortClick(opt.key)} />
-            ))}
+            <SortControl
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSelectKey={handleSortClick}
+              onToggleDir={() => setSortDir((d) => (d === "asc" ? "desc" : "asc"))}
+            />
 
             {/* Filter toggle */}
             <button
@@ -467,6 +622,7 @@ export default function SavedMoviesPage() {
           onToggleSave={() => handleRemoveMovie(selectedMovie.slug)}
           isSaved={true}
           canSave={true}
+          myServiceIds={myServiceIds}
         />
       )}
     </div>

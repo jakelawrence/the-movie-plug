@@ -2,13 +2,53 @@ import React from "react";
 import { RemoveScroll } from "react-remove-scroll";
 import { X, Bookmark, BookmarkCheck } from "lucide-react";
 
-export function MovieDetailsModal({ movie, onClose, onToggleSave, isSaved, canSave }) {
+// A labelled grid of streaming-provider logos. Shared between the "your services"
+// and "also available" groups so both render identically.
+function ProviderGroup({ label, providers }) {
+  return (
+    <div>
+      <p className="font-dmSans text-[9px] uppercase tracking-[0.22em] opacity-35 mb-3">{label}</p>
+      <div className="flex flex-wrap gap-x-3 gap-y-4">
+        {providers.map((p) => (
+          <div key={p.providerId} className="flex flex-col items-center gap-1.5 w-14">
+            {p.logoUrl ? (
+              <img
+                src={p.logoUrl}
+                alt={p.providerName || "Streaming provider"}
+                width="48"
+                height="48"
+                className="w-12 h-12 object-cover border border-fadedBlack/10 flex-shrink-0"
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div className="w-12 h-12 border border-fadedBlack/10 bg-fadedBlack/5 flex-shrink-0" />
+            )}
+            <span className="font-dmSans text-[9px] text-fadedBlack/50 text-center leading-tight line-clamp-2 w-full">
+              {p.providerName}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function MovieDetailsModal({ movie, onClose, onToggleSave, isSaved, canSave, myServiceIds = [] }) {
   if (!movie) return null;
 
   // Show every streaming site the movie is available on. The data layer already
   // de-duplicates by providerId and orders by availability priority (flatrate
   // first), so we render the list as-is.
   const visibleProviders = movie.streamingProviders ?? [];
+
+  // Split providers into the ones the user subscribes to and the rest, so we can
+  // surface "Available On Your Services" first. Provider IDs come from a JSON
+  // blob on the movie and an int column on the user, so coerce both to Number
+  // before comparing.
+  const mine = new Set(myServiceIds.map(Number));
+  const yourProviders = visibleProviders.filter((p) => mine.has(Number(p.providerId)));
+  const otherProviders = visibleProviders.filter((p) => !mine.has(Number(p.providerId)));
 
   return (
     <RemoveScroll>
@@ -121,31 +161,16 @@ export function MovieDetailsModal({ movie, onClose, onToggleSave, isSaved, canSa
 
             {/* Streaming */}
             {visibleProviders.length > 0 && (
-              <div className="border-t border-fadedBlack/10 pt-5">
-                <p className="font-dmSans text-[9px] uppercase tracking-[0.22em] opacity-35 mb-3">Available On</p>
-                <div className="flex flex-wrap gap-x-3 gap-y-4">
-                  {visibleProviders.map((p) => (
-                    <div key={p.providerId} className="flex flex-col items-center gap-1.5 w-14">
-                      {p.logoUrl ? (
-                        <img
-                          src={p.logoUrl}
-                          alt={p.providerName || "Streaming provider"}
-                          width="48"
-                          height="48"
-                          className="w-12 h-12 object-cover border border-fadedBlack/10 flex-shrink-0"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 border border-fadedBlack/10 bg-fadedBlack/5 flex-shrink-0" />
-                      )}
-                      <span className="font-dmSans text-[9px] text-fadedBlack/50 text-center leading-tight line-clamp-2 w-full">
-                        {p.providerName}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                <p className="font-dmSans text-[8px] uppercase tracking-[0.18em] opacity-30 mt-4">Streaming data provided by JustWatch</p>
+              <div className="border-t border-fadedBlack/10 pt-5 space-y-5">
+                {yourProviders.length > 0 ? (
+                  <>
+                    <ProviderGroup label="Available On Your Services" providers={yourProviders} />
+                    {otherProviders.length > 0 && <ProviderGroup label="Also Available On" providers={otherProviders} />}
+                  </>
+                ) : (
+                  <ProviderGroup label="Available On" providers={otherProviders} />
+                )}
+                <p className="font-dmSans text-[8px] uppercase tracking-[0.18em] opacity-30">Streaming data provided by JustWatch</p>
               </div>
             )}
 

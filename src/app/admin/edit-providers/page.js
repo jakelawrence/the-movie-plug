@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Check, X } from "lucide-react";
+import Loading from "../../components/Loading";
 
 export default function EditProvidersPage() {
   const [providers, setProviders] = useState([]);
@@ -76,7 +77,7 @@ export default function EditProvidersPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-black font-bold text-xl">Loading providers...</p>
+        <Loading />
       </div>
     );
   }

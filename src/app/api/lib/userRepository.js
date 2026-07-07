@@ -219,6 +219,10 @@ export async function getUserSavedMovies(username) {
 
   return {
     savedMovies: rows.map((row) => row.movie_slug),
+    // slug → ISO timestamp of when the movie was saved, so callers can sort by it.
+    savedAtBySlug: Object.fromEntries(
+      rows.map((row) => [row.movie_slug, row.saved_at ? new Date(row.saved_at).toISOString() : null])
+    ),
   };
 }
 

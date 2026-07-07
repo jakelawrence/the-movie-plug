@@ -26,7 +26,7 @@ function buildRoute(filters) {
   if (filters.vibes?.length) params.set("vibes", filters.vibes.join(","));
   if (filters.durations?.length) params.set("duration", filters.durations[0]);
   if (filters.decades?.length) params.set("decade", filters.decades[0]);
-  return `/search?${params.toString()}`;
+  return `/discover?${params.toString()}`;
 }
 
 export const SCENARIOS = [

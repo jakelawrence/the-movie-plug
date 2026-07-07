@@ -60,7 +60,7 @@
       "refersTo": "input-search",
       "description": "Square paper field with a 2px hairline ink border that deepens on focus; no glow.",
       "html": "<input class=\"ds-input-search\" type=\"text\" placeholder=\"Search a film you love\" />",
-      "css": ".ds-input-search { width: 100%; background: #f6f1ea; color: #1f1b17; border: 2px solid rgba(31,27,23,0.30); padding: 16px 24px; font-family: 'DM Sans', 'Avenir Next', sans-serif; font-weight: 700; font-size: 1.125rem; outline: none; transition: border-color 0.2s; } .ds-input-search::placeholder { color: rgba(31,27,23,0.40); } .ds-input-search:focus { border-color: rgba(31,27,23,0.60); }"
+      "css": ".ds-input-search { width: 100%; background: #f6f1ea; color: #1f1b17; border: 2px solid rgba(31,27,23,0.50); padding: 16px 24px; font-family: 'DM Sans', 'Avenir Next', sans-serif; font-weight: 700; font-size: 1.125rem; outline: none; transition: border-color 0.2s; } .ds-input-search::placeholder { color: rgba(31,27,23,0.65); } .ds-input-search:focus { border-color: rgba(31,27,23,0.70); }"
     },
     {
       "name": "Scenario Card",
