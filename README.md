@@ -171,6 +171,5 @@ public/                  Fonts, images, placeholder assets
 
 ## Notes
 
-- `movies.db` is still present, but runtime app traffic uses Postgres.
 - Anonymous/authenticated suggestion rate-limit helpers exist, but the current suggestions route only computes the limit state and does not enforce it.
 - The app is `private: true`; there is no packaged public library API.

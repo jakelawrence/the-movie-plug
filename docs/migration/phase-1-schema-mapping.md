@@ -46,10 +46,7 @@ The generated inventory report covers:
 | Postgres user/watch-provider tables | Yes after Phase 2 | Counted if the tables exist |
 | TMDB Watch Providers catalog | Yes for migration planning | Queried only with `--include-tmdb` to avoid accidental live API calls |
 | TMDB per-movie availability | Yes for migration planning | Not bulk-fetched by the inventory script; this belongs to the Phase 3 backfill |
-| Local `movies.db` | Secondary | Local row counts and `movies` columns are collected from SQLite |
 | `scripts/reviews/` | Yes | Files are listed and embedding-related filenames are flagged |
-
-Local SQLite currently has the legacy `movies`, `genres`, `nanogenres`, `directors`, `actors`, `likes`, and `favorites` tables. It should only be used if it contains data missing from DynamoDB or Postgres. The checked local database has old lightweight movie columns: `slug`, `name`, `avgRating`, `popularityRanking`, `posterUrl`, `link`, and `year`.
 
 The review source currently present under `scripts/reviews/` is `parse-letterboxd-reviews.mjs`. No embedding-generation script is currently present in that folder; Postgres already has populated review and embedding columns per the migration plan.
 
@@ -58,15 +55,15 @@ The review source currently present under `scripts/reviews/` is `parse-letterbox
 | Current app/DynamoDB field | Postgres column | Response compatibility | Notes |
 | --- | --- | --- | --- |
 | `slug` | `movie_slug` | return `slug` | Canonical Postgres primary key is `movie_slug`. |
-| `title` | `title` | return `title` | Local SQLite used `name`, but active app expects `title`. |
-| `name` | `title` | return `title` | Legacy SQLite/DynamoDB fallback only. |
+| `title` | `title` | return `title` | Active app expects `title`. |
+| `name` | `title` | return `title` | Legacy DynamoDB fallback only. |
 | `year` | `release_year` | return `releaseYear`; keep `year` if existing route needs it | Route filters should move to `release_year`. |
 | `duration` | `duration_minutes` | return `durationMinutes`; keep `duration` if existing route needs it | Postgres also has `runtime_minutes`; prefer `duration_minutes` for app parity. |
 | `rating` | `content_rating` | return `contentRating`; keep `rating` if existing route needs it | This is MPAA-style content rating, not average score. |
 | `avgRating` | `letterboxd_avg_rating` | return `avgRating` | Preserve current API shape. |
 | `averageRating` | `letterboxd_avg_rating` | return `averageRating` | Preserve current API shape. |
 | `popularity` | `letterboxd_popularity` | return if needed as `popularity` | Plan names this `letterboxd_popularity`, not `popularity`. |
-| `popularityRanking` | `letterboxd_popularity` | return if needed as `popularityRanking` | Legacy SQLite field. |
+| `popularityRanking` | `letterboxd_popularity` | return if needed as `popularityRanking` | Legacy field. |
 | `genreIds` | none | return `genreIds: []` | Integer genre IDs are intentionally not migrated. |
 | `genreNames` | `genres` | return `genreNames` and `genres` | Store names only in `text[]`. |
 | `genres` | `genres` | return `genres` and `genreNames` | Canonical movie genre source. |
@@ -77,7 +74,7 @@ The review source currently present under `scripts/reviews/` is `parse-letterbox
 | `directorSlug` | none | intentional removal | Separate directors table is out of scope. |
 | `actorSlug` | none | intentional removal | Actors are out of scope. |
 | `posterUrl` | `poster_url` | return `posterUrl` | No `poster_path` column exists. |
-| `link` | `letterboxd_link` | return if needed as `link` | Legacy SQLite used `link`. |
+| `link` | `letterboxd_link` | return if needed as `link` | Legacy field. |
 | `tmdbId` | `tmdb_id` | return `tmdbId` if needed | Use for watch-provider sync only, not live request-time lookup. |
 | `darknessLevel` | `darkness_level` | return `darknessLevel` | Phase 2 must add this column. |
 | `funninessLevel` | `funniness_level` | return `funninessLevel` | Phase 2 must add this column. |

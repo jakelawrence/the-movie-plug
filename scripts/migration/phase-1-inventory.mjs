@@ -6,8 +6,6 @@ import path from "node:path";
 import dotenv from "dotenv";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, GetCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
-import sqlite3 from "sqlite3";
-import { open as openSqlite } from "sqlite";
 import { getDatabaseUrl } from "../lib/postgres-url.mjs";
 
 dotenv.config({ path: ".env.local", quiet: true });
@@ -26,7 +24,6 @@ const POSTGRES_TABLES = [
   "watch_provider_sync_runs",
 ];
 const REQUIRED_POSTGRES_TABLES = ["movies", "users", "user_saved_movies"];
-const SQLITE_TABLES = ["movies", "genres", "nanogenres", "directors", "actors", "likes", "favorites"];
 
 function getArg(name, fallback = null) {
   const index = process.argv.indexOf(name);
@@ -55,7 +52,6 @@ Usage:
 Options:
   --out PATH              Write the inventory report to PATH. Prints JSON when omitted.
   --sample-slugs A,B      Slugs to compare across DynamoDB and Postgres.
-  --sqlite PATH           SQLite database path. Defaults to movies.db.
   --include-tmdb          Query the TMDB watch-provider catalog count.
   --strict                Exit non-zero when required remote sources cannot be inventoried.
   --help                  Show this help.
@@ -375,65 +371,6 @@ async function inventoryPostgres(sampleSlugs) {
   }
 }
 
-async function inventorySqlite(sqlitePath) {
-  if (!(await pathExists(sqlitePath))) {
-    return {
-      status: "skipped",
-      reason: `${sqlitePath} does not exist`,
-      row_counts: [],
-      movies_columns: [],
-    };
-  }
-
-  const db = await openSqlite({
-    filename: sqlitePath,
-    driver: sqlite3.Database,
-  });
-  const rowCounts = [];
-
-  try {
-    const tables = await db.all("select name from sqlite_master where type = 'table' order by name");
-    const tableNames = new Set(tables.map((table) => table.name));
-
-    for (const tableName of SQLITE_TABLES) {
-      if (!tableNames.has(tableName)) {
-        rowCounts.push({
-          table: tableName,
-          source: "sqlite",
-          status: "missing",
-          row_count: null,
-        });
-        continue;
-      }
-
-      const rows = await db.all(`select count(*) as row_count from ${quoteIdentifier(tableName)}`);
-      rowCounts.push({
-        table: tableName,
-        source: "sqlite",
-        status: "ok",
-        row_count: rows[0].row_count,
-      });
-    }
-
-    const moviesColumns = tableNames.has("movies") ? await db.all("pragma table_info(movies)") : [];
-
-    return {
-      status: "ok",
-      database_path: sqlitePath,
-      row_counts: rowCounts,
-      movies_columns: moviesColumns.map((column) => ({
-        name: column.name,
-        type: column.type,
-        not_null: Boolean(column.notnull),
-        primary_key: Boolean(column.pk),
-      })),
-      note: "Local SQLite is a legacy source and should only be used if it has data not present in DynamoDB or Neon.",
-    };
-  } finally {
-    await db.close();
-  }
-}
-
 async function inventoryReviewSources() {
   const rootDir = path.join("scripts", "reviews");
   const files = await listFiles(rootDir);
@@ -593,14 +530,12 @@ async function main() {
   }
 
   const outPath = getArg("--out");
-  const sqlitePath = getArg("--sqlite", "movies.db");
   const sampleSlugs = parseListArg("--sample-slugs", DEFAULT_SAMPLE_SLUGS);
   const includeTmdb = hasArg("--include-tmdb");
   const strict = hasArg("--strict");
 
   const dynamodb = await inventoryDynamoDB(sampleSlugs);
   const postgres = await inventoryPostgres(sampleSlugs);
-  const sqlite = await inventorySqlite(sqlitePath);
   const tmdbWatchProviders = await inventoryTmdbWatchProviders(includeTmdb, sampleSlugs, postgres.sample_movies, dynamodb.sample_movies);
   const reviewSources = await inventoryReviewSources();
 
@@ -611,7 +546,6 @@ async function main() {
     sources: {
       dynamodb,
       postgres,
-      sqlite,
       tmdb_watch_providers: tmdbWatchProviders,
       review_sources: reviewSources,
     },
