@@ -87,10 +87,9 @@ function getDisplayTitle(movie) {
 // CORE LOGIC FUNCTIONS
 // ============================================================================
 
-async function runEmbeddingCollaborative(inputMovieSlugs, excludeSlugs = []) {
+async function runEmbeddingCollaborative(inputMovieSlugs) {
   const recommendations = await getMultiSeedEmbeddingRecommendations({
     seedSlugs: inputMovieSlugs,
-    excludeSlugs,
     limit: Number.isFinite(EMBEDDING_CANDIDATE_LIMIT) ? EMBEDDING_CANDIDATE_LIMIT : 250,
     region: "US",
   });
@@ -154,10 +153,9 @@ function moodCacheKey(moodParams) {
   return `mood:${JSON.stringify(sorted)}`;
 }
 
-function embeddingCacheKey(inputSlugs, excludeSlugs) {
+function embeddingCacheKey(inputSlugs) {
   const input = [...inputSlugs].sort().join(",");
-  const exclude = [...(excludeSlugs || [])].sort().join(",");
-  return `embedding:${input}:${exclude}:${EMBEDDING_CANDIDATE_LIMIT}`;
+  return `embedding:${input}:${EMBEDDING_CANDIDATE_LIMIT}`;
 }
 
 function stripInternalRecommendationFields(movie) {
@@ -185,7 +183,6 @@ export async function POST(req) {
     const {
       mode,
       inputSlugs,
-      excludeSlugs,
       moodParams,
       // NEW: Filter parameters
       genres = [],
@@ -201,13 +198,13 @@ export async function POST(req) {
 
     switch (mode) {
       case "collaborative": {
-        const cacheKey = embeddingCacheKey(inputSlugs, excludeSlugs);
+        const cacheKey = embeddingCacheKey(inputSlugs);
         const cached = cache.get(cacheKey);
         if (cached) {
           ({ recommendations, userInteractions } = cached);
           logger.info(`Cache hit: ${cacheKey}`);
         } else {
-          const result = await runEmbeddingCollaborative(inputSlugs, excludeSlugs || []);
+          const result = await runEmbeddingCollaborative(inputSlugs);
           recommendations = result.recommendations;
           userInteractions = result.userInteractions;
           cache.set(cacheKey, { recommendations, userInteractions });
@@ -346,7 +343,6 @@ export async function POST(req) {
       originalCount: beforeCount,
       filteredCount: afterCount,
       userStreamingServices: streamingServices,
-      excludedMoviesCount: excludeSlugs?.length || 0,
       userBookmarksCount: userBookmarkedSlugs.length,
       userInteractions,
       filtersApplied: {

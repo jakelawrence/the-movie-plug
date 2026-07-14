@@ -547,7 +547,6 @@ export async function getMovieCount() {
 
 export async function getEmbeddingRecommendations({
   seedSlug,
-  excludeSlugs = [],
   limit = 250,
   region = "US",
 } = {}) {
@@ -556,7 +555,6 @@ export async function getEmbeddingRecommendations({
     return [];
   }
 
-  const normalizedExcludeSlugs = [...new Set([seedSlug, ...(excludeSlugs || [])].filter(Boolean))];
   const rows = await sql`
     select
       m.*,
@@ -566,7 +564,6 @@ export async function getEmbeddingRecommendations({
     where m.movie_slug <> ${seedSlug}
       and m.embedding_overall is not null
       and seed.embedding_overall is not null
-      and not (m.movie_slug = any(${normalizedExcludeSlugs}))
     order by embedding_distance asc
     limit ${limit}
   `;
@@ -582,7 +579,6 @@ export async function getEmbeddingRecommendations({
 
 export async function getMultiSeedEmbeddingRecommendations({
   seedSlugs,
-  excludeSlugs = [],
   limit = 250,
   region = "US",
 } = {}) {
@@ -590,10 +586,11 @@ export async function getMultiSeedEmbeddingRecommendations({
   if (!seedSlugs || seedSlugs.length === 0) return [];
 
   if (seedSlugs.length === 1) {
-    return getEmbeddingRecommendations({ seedSlug: seedSlugs[0], excludeSlugs, limit, region });
+    return getEmbeddingRecommendations({ seedSlug: seedSlugs[0], limit, region });
   }
 
-  const normalizedExclude = [...new Set([...seedSlugs, ...(excludeSlugs || [])].filter(Boolean))];
+  // Seeds are always excluded from their own recommendations.
+  const normalizedExclude = [...new Set(seedSlugs.filter(Boolean))];
 
   // Fetch top candidates per seed in parallel using both the overall and nanogenre
   // embeddings, then combine everything with Reciprocal Rank Fusion.

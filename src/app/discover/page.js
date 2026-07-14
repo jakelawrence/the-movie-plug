@@ -50,7 +50,7 @@ export const useDisableBodyScroll = (isOpen) => {
 
 // ─── Movie search autocomplete dropdown ───────────────────────────────────────
 
-function MovieSearchInput({ placeholder, onSelect, excludeSlugs = [], accentColor = "yellow" }) {
+function MovieSearchInput({ placeholder, onSelect, excludeSlugs = [] }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [open, setOpen] = useState(false);
@@ -181,13 +181,11 @@ function MovieSearchInput({ placeholder, onSelect, excludeSlugs = [], accentColo
   );
 }
 
-// ─── Movie pill (added to input or exclude list) ──────────────────────────────
+// ─── Movie pill (added to input list) ─────────────────────────────────────────
 
-function MoviePill({ movie, onRemove, variant = "input" }) {
-  const bg = variant === "exclude" ? "bg-danger/10 border-danger/30" : "bg-backgroundSecondary border-fadedBlack/20";
-
+function MoviePill({ movie, onRemove }) {
   return (
-    <div className={`flex items-center gap-2 border ${bg} pl-2 pr-1 py-1 max-w-full`}>
+    <div className="flex items-center gap-2 border bg-backgroundSecondary border-fadedBlack/20 pl-2 pr-1 py-1 max-w-full">
       <div className="w-6 h-9 flex-shrink-0 border border-fadedBlack/15 overflow-hidden bg-fadedBlack/5">
         <img
           src={getPosterUrl(movie)}
@@ -414,9 +412,8 @@ export default function DiscoverPage() {
 
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Input / exclude lists
+  // Input movie list
   const [inputMovies, setInputMovies] = useState([]);
-  const [excludeMovies, setExcludeMovies] = useState([]);
 
   // Filters
   const [activeGenres, setActiveGenres] = useState([]);
@@ -511,19 +508,13 @@ export default function DiscoverPage() {
 
   // ── Helpers ────────────────────────────────────────────────────────────────
 
-  const allExcludeSlugs = useMemo(() => [...inputMovies.map((m) => m.slug), ...excludeMovies.map((m) => m.slug)], [inputMovies, excludeMovies]);
+  const inputSlugs = useMemo(() => inputMovies.map((m) => m.slug), [inputMovies]);
 
   const addInputMovie = useCallback((movie) => {
     setInputMovies((prev) => (prev.find((m) => m.slug === movie.slug) ? prev : [...prev, movie]));
   }, []);
 
   const removeInputMovie = useCallback((slug) => setInputMovies((prev) => prev.filter((m) => m.slug !== slug)), []);
-
-  const addExcludeMovie = useCallback((movie) => {
-    setExcludeMovies((prev) => (prev.find((m) => m.slug === movie.slug) ? prev : [...prev, movie]));
-  }, []);
-
-  const removeExcludeMovie = useCallback((slug) => setExcludeMovies((prev) => prev.filter((m) => m.slug !== slug)), []);
 
   const toggleGenre = (g) => setActiveGenres((p) => (p.includes(g) ? p.filter((x) => x !== g) : [...p, g]));
   const toggleVibe = (k) => setActiveVibes((p) => (p.includes(k) ? p.filter((x) => x !== k) : [...p, k]));
@@ -540,7 +531,6 @@ export default function DiscoverPage() {
     if (!user?.username) {
       const params = new URLSearchParams();
       inputMovies.forEach((m) => params.append("movie", m.slug));
-      excludeMovies.forEach((m) => params.append("exclude", m.slug));
       if (activeGenres.length) params.set("genres", activeGenres.join("|"));
       if (activeVibes.length) params.set("vibes", activeVibes.join("|"));
       if (activeDuration) params.set("duration", activeDuration);
@@ -584,7 +574,6 @@ export default function DiscoverPage() {
       const body = {
         mode: "collaborative",
         inputSlugs: inputMovies.map((m) => m.slug),
-        excludeSlugs: excludeMovies.map((m) => m.slug),
         // NEW: Pass filters to API
         genres: activeGenres,
         vibes: activeVibes,
@@ -621,9 +610,8 @@ export default function DiscoverPage() {
 
   useEffect(() => {
     const slugs = searchParams.getAll("movie");
-    const excludes = searchParams.getAll("exclude");
     const fromSearch = searchParams.get("fromSearch") === "true";
-    if (!slugs.length && !excludes.length) return;
+    if (!slugs.length) return;
 
     const fetchMovie = (slug) =>
       fetch(`/api/movies?slug=${encodeURIComponent(slug)}&limit=1`)
@@ -631,16 +619,14 @@ export default function DiscoverPage() {
         .then((data) => data.movies?.[0])
         .catch(() => null);
 
-    Promise.all([Promise.all(slugs.map(fetchMovie)), Promise.all(excludes.map(fetchMovie))]).then(([inputResults, excludeResults]) => {
+    Promise.all(slugs.map(fetchMovie)).then((inputResults) => {
       const validInputs = inputResults.filter(Boolean);
-      const validExcludes = excludeResults.filter(Boolean);
       validInputs.forEach((m) => addInputMovie(m));
-      validExcludes.forEach((m) => addExcludeMovie(m));
       if (fromSearch && validInputs.length > 0) {
         pendingAutoSearch.current = true;
       }
     });
-  }, [searchParams, addInputMovie, addExcludeMovie]);
+  }, [searchParams, addInputMovie]);
 
   // Auto-trigger search once the pre-populated movie lands in state
   useEffect(() => {
@@ -658,11 +644,11 @@ export default function DiscoverPage() {
   // stays at the top of the always-visible left panel.
   const primarySearch = (
     <div className="flex flex-col gap-3">
-      <MovieSearchInput placeholder="Search for a movie you love…" onSelect={addInputMovie} excludeSlugs={allExcludeSlugs} accentColor="yellow" />
+      <MovieSearchInput placeholder="Search for a movie you love…" onSelect={addInputMovie} excludeSlugs={inputSlugs} />
       {inputMovies.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-1">
           {inputMovies.map((m) => (
-            <MoviePill key={m.slug} movie={m} onRemove={removeInputMovie} variant="input" />
+            <MoviePill key={m.slug} movie={m} onRemove={removeInputMovie} />
           ))}
         </div>
       )}
@@ -703,30 +689,6 @@ export default function DiscoverPage() {
           <div className="pt-2">{primarySearch}</div>
         </FilterSection>
       </div>
-
-      {/* ── EXCLUDE MOVIES ── */}
-      <FilterSection title="Exclude these movies" defaultOpen={false}>
-        <div className="flex flex-col gap-3 pt-2">
-          <MovieSearchInput
-            placeholder="Search for a movie to exclude…"
-            onSelect={addExcludeMovie}
-            excludeSlugs={allExcludeSlugs}
-            accentColor="red"
-          />
-          {excludeMovies.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-1">
-              {excludeMovies.map((m) => (
-                <MoviePill key={m.slug} movie={m} onRemove={removeExcludeMovie} variant="exclude" />
-              ))}
-            </div>
-          )}
-          {excludeMovies.length === 0 && (
-            <p className="font-dmSans text-fadedBlack/70 text-xs leading-relaxed">
-              Movies added here are excluded — and their fans are down-weighted in results
-            </p>
-          )}
-        </div>
-      </FilterSection>
 
       {/* ── GENRE ── */}
       <FilterSection title="Genre" defaultOpen={false} count={activeGenres.length}>
