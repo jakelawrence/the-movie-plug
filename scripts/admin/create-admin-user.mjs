@@ -4,7 +4,7 @@ dotenv.config({ path: ".env.local" });
 import postgres from "postgres";
 import bcrypt from "bcryptjs";
 import readline from "readline";
-import { getDatabaseUrl } from "./lib/postgres-url.mjs";
+import { getDatabaseUrl } from "../lib/postgres-url.mjs";
 
 const sql = postgres(getDatabaseUrl({ direct: true }), { ssl: "require", prepare: false });
 

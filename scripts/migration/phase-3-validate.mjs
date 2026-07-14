@@ -15,7 +15,7 @@ import {
   quoteIdentifier,
   readAllJsonRows,
   writeJsonFile,
-} from "./phase-3-common.mjs";
+} from "../lib/script-utils.mjs";
 
 const REQUIRED_POSTGRES_TABLES = ["movies", "users", "user_saved_movies"];
 const OPTIONAL_POSTGRES_TABLES = ["watch_providers", "movie_watch_providers", "movie_watch_provider_sync_state"];

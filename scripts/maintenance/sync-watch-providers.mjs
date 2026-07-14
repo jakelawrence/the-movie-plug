@@ -13,7 +13,7 @@ import {
   parseIntegerArg,
   parseListArg,
   writeJsonFile,
-} from "./phase-3-common.mjs";
+} from "../lib/script-utils.mjs";
 
 const PROVIDER_COLUMNS = ["provider_id", "provider_name", "logo_path", "display_priority", "raw_tmdb"];
 const MOVIE_PROVIDER_COLUMNS = ["movie_slug", "tmdb_id", "region", "provider_id", "availability_type", "tmdb_link", "fetched_at", "raw_tmdb"];
@@ -21,9 +21,9 @@ const MOVIE_PROVIDER_COLUMNS = ["movie_slug", "tmdb_id", "region", "provider_id"
 function usage() {
   console.log(`
 Usage:
-  node scripts/migration/phase-3-sync-watch-providers.mjs
+  node scripts/maintenance/sync-watch-providers.mjs
 
-Backfills TMDB Watch Providers data into Neon Postgres for Phase 3.
+Syncs TMDB Watch Providers data into Neon Postgres.
 
 Options:
   --region US           Watch-provider region. Defaults to US

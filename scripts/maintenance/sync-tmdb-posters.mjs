@@ -11,7 +11,7 @@ import {
   parseIntegerArg,
   parseListArg,
   writeJsonFile,
-} from "./phase-3-common.mjs";
+} from "../lib/script-utils.mjs";
 
 const TMDB_MOVIE_DETAILS_URL = "https://api.themoviedb.org/3/movie";
 const TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p";
@@ -20,7 +20,7 @@ const DEFAULT_IMAGE_SIZE = "w500";
 function usage() {
   console.log(`
 Usage:
-  node scripts/migration/phase-5-sync-tmdb-posters.mjs
+  node scripts/maintenance/sync-tmdb-posters.mjs
 
 Fetches TMDB movie details for movies with tmdb_id and updates public.movies.poster_url
 from the returned poster_path.

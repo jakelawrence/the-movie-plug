@@ -16,7 +16,7 @@ import {
   quoteIdentifier,
   readAllJsonRows,
   writeJsonFile,
-} from "./phase-3-common.mjs";
+} from "../lib/script-utils.mjs";
 
 const MOVIE_COLUMNS = [
   "movie_slug",

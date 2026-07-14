@@ -17,7 +17,7 @@ import {
   tableFileName,
   writeJsonFile,
   writeNdjson,
-} from "./phase-3-common.mjs";
+} from "../lib/script-utils.mjs";
 
 function usage() {
   console.log(`

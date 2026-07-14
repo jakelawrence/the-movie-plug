@@ -3,7 +3,7 @@
 import postgres from "postgres";
 import { getDatabaseUrl } from "../lib/postgres-url.mjs";
 
-import { getArg, hasArg, nowIso, writeJsonFile } from "./phase-3-common.mjs";
+import { getArg, hasArg, nowIso, writeJsonFile } from "../lib/script-utils.mjs";
 
 const EMBEDDING_COLUMNS = [
   "embedding_overall",
@@ -20,7 +20,7 @@ const EMBEDDING_COLUMNS = [
 function usage() {
   console.log(`
 Usage:
-  node scripts/migration/semantic-search-inventory.mjs
+  node scripts/maintenance/semantic-search-inventory.mjs
 
 Checks Neon pgvector readiness for semantic movie search.
 

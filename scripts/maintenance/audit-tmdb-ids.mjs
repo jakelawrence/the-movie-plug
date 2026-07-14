@@ -16,7 +16,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: ".env.local", quiet: true });
 
 import postgres from "postgres";
-import { getDatabaseUrl } from "./lib/postgres-url.mjs";
+import { getDatabaseUrl } from "../lib/postgres-url.mjs";
 import {
   getArg,
   hasArg,
@@ -25,7 +25,7 @@ import {
   parseIntegerArg,
   parseListArg,
   writeJsonFile,
-} from "./migration/phase-3-common.mjs";
+} from "../lib/script-utils.mjs";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const DEFAULT_CONCURRENCY = 5;
@@ -34,7 +34,7 @@ const DEFAULT_REPORT_PATH = "docs/migration/tmdb-id-audit-report.json";
 function usage() {
   console.log(`
 Usage:
-  node scripts/audit-tmdb-ids.mjs [options]
+  node scripts/maintenance/audit-tmdb-ids.mjs [options]
 
 Audits and re-assigns TMDB IDs for all movies. Re-fetches metadata from TMDB
 using IMDB ID (most accurate) or title search (fallback). Updates the database
