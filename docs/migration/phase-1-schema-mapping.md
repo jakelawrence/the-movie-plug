@@ -1,6 +1,6 @@
 # Phase 1 Schema Mapping
 
-This document implements Phase 1 of `SUPABASE_POSTGRES_MIGRATION_PLAN.md`: inventory the current sources, choose naming conventions, and map the fields used by `src/app/api/lib/dynamodb.js` to Postgres columns or intentional removals.
+This document records the Phase 1 Postgres migration mapping: inventory the source data, choose naming conventions, and map legacy DynamoDB-shaped fields to Postgres columns or intentional removals.
 
 Run the repeatable inventory with:
 
@@ -29,7 +29,7 @@ The command writes `docs/migration/phase-1-inventory.json`.
   - `movies.director text`
 - Actors, likes, and favorites are intentionally outside this migration.
 - Streaming availability is not stored on `movies`. Existing `movie.streamingProviders` arrays should be hydrated from `movie_watch_providers` joined to `watch_providers`.
-- App-owned auth stays on the `users` table. Supabase Auth is not part of this cutover.
+- App-owned auth stays on the `users` table. Managed database auth is not part of this cutover.
 
 ## Source Inventory
 
@@ -41,17 +41,17 @@ The generated inventory report covers:
 | DynamoDB `users` | Yes | `ScanCommand` with `Select: "COUNT"` |
 | DynamoDB `user-saved-movies` | Yes | `ScanCommand` with `Select: "COUNT"` |
 | DynamoDB `providers` | Helpful legacy cache | Counted as optional because TMDB Watch Providers is the canonical source |
-| Supabase/Postgres `movies` | Yes | Counted when `DATABASE_URL` is set |
-| Supabase/Postgres `reviews` | Yes | Counted when `DATABASE_URL` is set |
-| Supabase/Postgres user/watch-provider tables | Yes after Phase 2 | Counted if the tables exist |
+| Postgres `movies` | Yes | Counted when `DATABASE_URL` is set |
+| Postgres `reviews` | Yes | Counted when `DATABASE_URL` is set |
+| Postgres user/watch-provider tables | Yes after Phase 2 | Counted if the tables exist |
 | TMDB Watch Providers catalog | Yes for migration planning | Queried only with `--include-tmdb` to avoid accidental live API calls |
 | TMDB per-movie availability | Yes for migration planning | Not bulk-fetched by the inventory script; this belongs to the Phase 3 backfill |
 | Local `movies.db` | Secondary | Local row counts and `movies` columns are collected from SQLite |
 | `scripts/reviews/` | Yes | Files are listed and embedding-related filenames are flagged |
 
-Local SQLite currently has the legacy `movies`, `genres`, `nanogenres`, `directors`, `actors`, `likes`, and `favorites` tables. It should only be used if it contains data missing from DynamoDB or Supabase. The checked local database has old lightweight movie columns: `slug`, `name`, `avgRating`, `popularityRanking`, `posterUrl`, `link`, and `year`.
+Local SQLite currently has the legacy `movies`, `genres`, `nanogenres`, `directors`, `actors`, `likes`, and `favorites` tables. It should only be used if it contains data missing from DynamoDB or Postgres. The checked local database has old lightweight movie columns: `slug`, `name`, `avgRating`, `popularityRanking`, `posterUrl`, `link`, and `year`.
 
-The review source currently present under `scripts/reviews/` is `parse-letterboxd-reviews.mjs`. No embedding-generation script is currently present in that folder; Supabase already has populated review and embedding columns per the migration plan.
+The review source currently present under `scripts/reviews/` is `parse-letterboxd-reviews.mjs`. No embedding-generation script is currently present in that folder; Postgres already has populated review and embedding columns per the migration plan.
 
 ## Movie Field Mapping
 
@@ -61,7 +61,7 @@ The review source currently present under `scripts/reviews/` is `parse-letterbox
 | `title` | `title` | return `title` | Local SQLite used `name`, but active app expects `title`. |
 | `name` | `title` | return `title` | Legacy SQLite/DynamoDB fallback only. |
 | `year` | `release_year` | return `releaseYear`; keep `year` if existing route needs it | Route filters should move to `release_year`. |
-| `duration` | `duration_minutes` | return `durationMinutes`; keep `duration` if existing route needs it | Supabase also has `runtime_minutes`; prefer `duration_minutes` for app parity. |
+| `duration` | `duration_minutes` | return `durationMinutes`; keep `duration` if existing route needs it | Postgres also has `runtime_minutes`; prefer `duration_minutes` for app parity. |
 | `rating` | `content_rating` | return `contentRating`; keep `rating` if existing route needs it | This is MPAA-style content rating, not average score. |
 | `avgRating` | `letterboxd_avg_rating` | return `avgRating` | Preserve current API shape. |
 | `averageRating` | `letterboxd_avg_rating` | return `averageRating` | Preserve current API shape. |

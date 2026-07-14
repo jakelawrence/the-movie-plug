@@ -1,12 +1,12 @@
 # Phase 3 Data Migration Runbook
 
-This runbook implements Phase 3 of `SUPABASE_POSTGRES_MIGRATION_PLAN.md`: export DynamoDB source data, transform it into the Supabase Postgres schema, load it, backfill TMDB Watch Providers, and validate the result.
+This runbook records the Phase 3 Postgres migration flow: export DynamoDB source data, transform it into the Postgres schema, load it, backfill TMDB Watch Providers, and validate the result.
 
 Raw and transformed payloads are written under `data/migration/phase-3/` by default. That directory is ignored by git because it can contain user data and password hashes.
 
 ## Prerequisites
 
-- Phase 2 SQL has been applied to Supabase.
+- Phase 2 SQL has been applied to Neon Postgres.
 - `.env.local` has `DATABASE_URL`.
 - `.env.local` has AWS credentials and `AWS_REGION` for DynamoDB export.
 - `.env.local` has `TMDB_AUTH_TOKEN` for watch-provider catalog and availability sync.
@@ -69,26 +69,26 @@ The loader upserts in this order by default:
 2. `users`
 3. `user_saved_movies`
 
-Movie upserts preserve existing Supabase values when the transformed DynamoDB value is `null`. Saved movie rows can be filtered with `--skip-invalid-refs` when an exported saved row references a user or movie that is not present in Postgres.
+Movie upserts preserve existing Postgres values when the transformed DynamoDB value is `null`. Saved movie rows can be filtered with `--skip-invalid-refs` when an exported saved row references a user or movie that is not present in Postgres.
 
 ## 4. Sync TMDB Watch Providers
 
 Refresh the provider catalog only:
 
 ```sh
-npm run migrate:phase3:sync-providers -- --catalog-only
+npm run sync:providers -- --catalog-only
 ```
 
 Refresh a first movie availability chunk:
 
 ```sh
-npm run migrate:phase3:sync-providers -- --region US --limit 100 --concurrency 2
+npm run sync:providers -- --region US --limit 100 --concurrency 2
 ```
 
 Refresh a specific set of slugs:
 
 ```sh
-npm run migrate:phase3:sync-providers -- --movie-slugs the-night-of-the-hunter --region US
+npm run sync:providers -- --movie-slugs the-night-of-the-hunter --region US
 ```
 
 For each movie-region refresh, the script replaces existing `movie_watch_providers` rows inside a transaction and updates `movie_watch_provider_sync_state`. This prevents stale availability rows after TMDB changes. Keep concurrency low and rerun with `--offset` for subsequent chunks.

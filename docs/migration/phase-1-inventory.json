@@ -261,7 +261,7 @@
           "primary_key": false
         }
       ],
-      "note": "Local SQLite is a legacy source and should only be used if it has data not present in DynamoDB or Supabase."
+      "note": "Local SQLite is a legacy source and should only be used if it has data not present in DynamoDB or Postgres."
     },
     "tmdb_watch_providers": {
       "status": "ok",
