@@ -129,7 +129,7 @@ export default function StreamingServicesPage() {
   };
 
   const handleSkip = () => {
-    router.push("/scenario");
+    router.push("/scenarios");
   };
 
   // Show loading state while checking auth or loading providers

@@ -1,6 +1,5 @@
 import localFont from "next/font/local";
 import "./globals.css";
-import { MovieCollectionProvider } from "./context/MovieCollectionContext";
 import Footer from "./components/Footer";
 import AuthProvider from "./components/AuthProvider";
 
@@ -51,10 +50,8 @@ export default function RootLayout({ children }) {
     >
       <body className={`${dmSans.className} antialiased bg-background text-fadedBlack`}>
         <AuthProvider>
-          <MovieCollectionProvider>
-            <div>{children}</div>
-            <Footer />
-          </MovieCollectionProvider>
+          <div>{children}</div>
+          <Footer />
         </AuthProvider>
       </body>
     </html>

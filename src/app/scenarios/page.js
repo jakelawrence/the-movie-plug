@@ -2,18 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useMovieCollection } from "../context/MovieCollectionContext";
 import { Navbar } from "../components/Navbar";
 import { SCENARIOS } from "../api/lib/scenarios";
 
 export default function Scenarios() {
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false);
-  const { resetCollection } = useMovieCollection();
 
   useEffect(() => {
     setIsLoaded(true);
-    resetCollection();
   }, []);
 
   const handleScenarioClick = (scenario) => {
