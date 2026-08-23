@@ -17,6 +17,7 @@ import {
 
 const PROVIDER_COLUMNS = ["provider_id", "provider_name", "logo_path", "display_priority", "raw_tmdb"];
 const MOVIE_PROVIDER_COLUMNS = ["movie_slug", "tmdb_id", "region", "provider_id", "availability_type", "tmdb_link", "fetched_at", "raw_tmdb"];
+const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/original";
 
 function usage() {
   console.log(`
@@ -24,6 +25,10 @@ Usage:
   node scripts/maintenance/sync-watch-providers.mjs
 
 Syncs TMDB Watch Providers data into Neon Postgres.
+
+Each movie is written to two places from the same TMDB response:
+  - movies.watch_providers      the country-keyed JSONB the app reads
+  - movie_watch_providers       normalized rows for the selected --region
 
 Options:
   --region US           Watch-provider region. Defaults to US
@@ -34,6 +39,10 @@ Options:
   --catalog-only        Only refresh watch_providers catalog
   --skip-catalog        Do not refresh watch_providers catalog before movies
   --dry-run             Fetch and report without writing to Postgres
+  --explain             Print how each movie's providers were derived, ending
+                        with the list the app will actually render. Pair with
+                        --movie-slugs (or a small --limit) — it is ~1 screen
+                        per movie. Combines well with --dry-run
   --report PATH         Write a JSON report. Defaults to docs/migration/phase-3-watch-provider-sync-report.json
   --help                Show this help
 `);
@@ -155,7 +164,7 @@ async function selectMovies(sql, { region, limit, offset, movieSlugs }) {
       limit ${limitPlaceholder}
       offset ${offsetPlaceholder}
     `,
-    params
+    params,
   );
 
   return rows.map((row) => ({
@@ -208,6 +217,159 @@ function buildAvailabilityRows(movie, body, region, fetchedAt) {
   };
 }
 
+// TMDB gives us every country in one response, so we rebuild the whole
+// movies.watch_providers blob rather than patching a single region into it —
+// patching would leave the other ~75 countries at whatever staleness they had.
+function toJsonProvider(provider) {
+  const providerId = Number.parseInt(provider.provider_id, 10);
+  if (!Number.isFinite(providerId)) return null;
+
+  const displayPriority = Number.parseInt(provider.display_priority, 10);
+
+  return {
+    providerId,
+    providerName: provider.provider_name ?? null,
+    logoUrl: provider.logo_path ? `${TMDB_IMAGE_BASE}${provider.logo_path}` : null,
+    displayPriority: Number.isFinite(displayPriority) ? displayPriority : null,
+  };
+}
+
+// Shape the app expects (movieRepository.flattenWatchProviders): country ->
+// { link, flatrate[], free[], ads[], rent[], buy[] } with camelCased providers.
+// Returns null when TMDB knows of no availability anywhere, matching the JSON
+// null already stored for those movies.
+function buildWatchProvidersJson(body) {
+  const results = body.results && typeof body.results === "object" ? body.results : null;
+  if (!results) return null;
+
+  const countries = {};
+
+  for (const [country, payload] of Object.entries(results)) {
+    if (!payload || typeof payload !== "object") continue;
+
+    const countryPayload = {};
+    if (payload.link) countryPayload.link = payload.link;
+
+    for (const availabilityType of WATCH_AVAILABILITY_TYPES) {
+      const providers = Array.isArray(payload[availabilityType]) ? payload[availabilityType] : [];
+      const normalized = providers.map(toJsonProvider).filter(Boolean);
+      if (normalized.length === 0) continue;
+
+      // TMDB already returns these in priority order; sort anyway so repeated
+      // syncs produce byte-identical JSON.
+      normalized.sort((a, b) => (a.displayPriority ?? Number.MAX_SAFE_INTEGER) - (b.displayPriority ?? Number.MAX_SAFE_INTEGER));
+      countryPayload[availabilityType] = normalized;
+    }
+
+    if (Object.keys(countryPayload).length === 0) continue;
+    countries[country] = countryPayload;
+  }
+
+  return Object.keys(countries).length > 0 ? countries : null;
+}
+
+// Mirrors movieRepository.flattenWatchProviders: the app de-duplicates by
+// providerId and keeps the FIRST bucket a provider appears in, walking the
+// buckets in WATCH_AVAILABILITY_TYPES order. That is why a title you can both
+// rent and buy shows up once, tagged "rent". Also records the buckets that lost
+// so --explain can show what was folded away.
+//
+// Kept in sync by hand with the app's WATCH_PROVIDER_BUCKETS — if that order
+// changes and this does not, --explain will confidently describe the wrong UI.
+function flattenForDisplay(countryPayload) {
+  const winners = new Map();
+  const alsoIn = new Map();
+
+  for (const availabilityType of WATCH_AVAILABILITY_TYPES) {
+    const list = Array.isArray(countryPayload?.[availabilityType]) ? countryPayload[availabilityType] : [];
+    for (const provider of list) {
+      if (provider?.providerId == null) continue;
+
+      if (winners.has(provider.providerId)) {
+        alsoIn.get(provider.providerId).push(availabilityType);
+        continue;
+      }
+
+      winners.set(provider.providerId, { ...provider, type: availabilityType });
+      alsoIn.set(provider.providerId, []);
+    }
+  }
+
+  return Array.from(winners.values()).map((provider) => ({
+    ...provider,
+    alsoIn: alsoIn.get(provider.providerId),
+  }));
+}
+
+function formatProviderRow(provider) {
+  const id = String(provider.providerId).padStart(5);
+  const name = (provider.providerName ?? "(unnamed)").padEnd(32).slice(0, 32);
+  return { id, name };
+}
+
+// Built as one string and logged in a single call: with --concurrency > 1 the
+// per-movie blocks would otherwise interleave into nonsense.
+function explainMovie(movie, region, availability, dryRun) {
+  const lines = [];
+  const watchProviders = availability.watch_providers;
+  const countries = watchProviders ? Object.keys(watchProviders) : [];
+  const countryPayload = watchProviders?.[region] ?? null;
+  const verb = dryRun ? "would write" : "wrote";
+
+  lines.push("─".repeat(78));
+  lines.push(`${movie.movie_slug}  (tmdb ${movie.tmdb_id}, region ${region})`);
+  lines.push(`  TMDB returned availability in ${countries.length} countries`);
+
+  if (!countryPayload) {
+    lines.push(`  No ${region} entry in the response — status "${availability.status}".`);
+    lines.push(
+      countries.length === 0
+        ? `  ${verb} movies.watch_providers = JSON null (TMDB has no availability for this film anywhere), and 0 ${region} rows.`
+        : `  ${verb} movies.watch_providers with the ${countries.length} non-${region} countries, and 0 ${region} rows.`,
+    );
+    lines.push(`  The app will show no providers here, because it only reads watch_providers['${region}'].`);
+    lines.push("");
+    return lines.map((line) => line.trimEnd()).join("\n");
+  }
+
+  lines.push(`  ${region} link: ${countryPayload.link ?? "(none)"}`);
+  lines.push("");
+  lines.push(`  Step 1 — ${region} buckets exactly as TMDB grouped them:`);
+
+  let bucketTotal = 0;
+  for (const availabilityType of WATCH_AVAILABILITY_TYPES) {
+    const list = countryPayload[availabilityType];
+    if (!Array.isArray(list) || list.length === 0) continue;
+
+    bucketTotal += list.length;
+    for (const provider of list) {
+      const { id, name } = formatProviderRow(provider);
+      lines.push(`    ${availabilityType.padEnd(9)} ${id}  ${name}  priority ${provider.displayPriority ?? "—"}`);
+    }
+  }
+
+  const flattened = flattenForDisplay(countryPayload);
+  lines.push("");
+  lines.push("  Step 2 — what the app renders, after de-duplicating by provider:");
+
+  for (const provider of flattened) {
+    const { id, name } = formatProviderRow(provider);
+    const folded = provider.alsoIn.length > 0 ? `  <- also offered as ${provider.alsoIn.join(", ")}` : "";
+    lines.push(`    ${provider.type.padEnd(9)} ${id}  ${name}${folded}`);
+  }
+
+  const foldedCount = bucketTotal - flattened.length;
+  lines.push(
+    `  ${flattened.length} provider${flattened.length === 1 ? "" : "s"} shown` +
+      (foldedCount > 0 ? `, ${foldedCount} duplicate listing${foldedCount === 1 ? "" : "s"} folded into a higher bucket` : ""),
+  );
+  lines.push("");
+  lines.push(`  ${verb}: movies.watch_providers = ${countries.length} countries, movie_watch_providers = ${availability.rows.length} ${region} rows`);
+  lines.push("");
+
+  return lines.map((line) => line.trimEnd()).join("\n");
+}
+
 async function updateErrorState(sql, movie, region, error, dryRun) {
   if (dryRun) return;
 
@@ -229,6 +391,18 @@ async function replaceMovieAvailability(sql, movie, region, availability, dryRun
   if (dryRun) return;
 
   await sql.begin(async (tx) => {
+    // ::text::jsonb, not ::jsonb — a bare ::jsonb cast makes Postgres type the
+    // bind parameter as jsonb and store the payload double-encoded as a JSON
+    // string. Going through text forces it to be parsed. It also means
+    // JSON.stringify(null) ("null") lands as JSON null rather than SQL NULL,
+    // matching how unavailable movies are already stored.
+    await tx`
+      update public.movies
+      set watch_providers = ${JSON.stringify(availability.watch_providers)}::text::jsonb,
+          updated_at = now()
+      where movie_slug = ${movie.movie_slug}
+    `;
+
     await tx`
       delete from public.movie_watch_providers
       where movie_slug = ${movie.movie_slug}
@@ -261,14 +435,20 @@ async function replaceMovieAvailability(sql, movie, region, availability, dryRun
   });
 }
 
-async function refreshMovie(sql, movie, region, dryRun) {
+async function refreshMovie(sql, movie, region, { dryRun, explain }) {
   try {
     const body = await fetchMovieAvailability(movie.tmdb_id);
     const fetchedAt = nowIso();
+    const watchProviders = buildWatchProvidersJson(body);
     const availability = {
       ...buildAvailabilityRows(movie, body, region, fetchedAt),
+      watch_providers: watchProviders,
       fetched_at: fetchedAt,
     };
+
+    if (explain) {
+      console.log(explainMovie(movie, region, availability, dryRun));
+    }
 
     await replaceMovieAvailability(sql, movie, region, availability, dryRun);
 
@@ -277,6 +457,7 @@ async function refreshMovie(sql, movie, region, dryRun) {
       tmdb_id: movie.tmdb_id,
       status: availability.status,
       provider_count: availability.rows.length,
+      country_count: watchProviders ? Object.keys(watchProviders).length : 0,
       tmdb_link: availability.tmdb_link,
     };
   } catch (error) {
@@ -286,6 +467,7 @@ async function refreshMovie(sql, movie, region, dryRun) {
       tmdb_id: movie.tmdb_id,
       status: "error",
       provider_count: 0,
+      country_count: 0,
       error: error.message,
     };
   }
@@ -328,6 +510,7 @@ async function main() {
   const catalogOnly = hasArg("--catalog-only");
   const skipCatalog = hasArg("--skip-catalog");
   const dryRun = hasArg("--dry-run");
+  const explain = hasArg("--explain");
   const reportPath = getArg("--report", "docs/migration/phase-3-watch-provider-sync-report.json");
 
   const sql = createSql();
@@ -356,8 +539,10 @@ async function main() {
 
       runId = await startRun(sql, region, dryRun);
       movieResults = await mapWithConcurrency(movies, concurrency, async (movie, index) => {
-        const result = await refreshMovie(sql, movie, region, dryRun);
-        console.log(`  ${index + 1}/${movies.length} ${movie.movie_slug}: ${result.status} (${result.provider_count})`);
+        const result = await refreshMovie(sql, movie, region, { dryRun, explain });
+        console.log(
+          `  ${index + 1}/${movies.length} ${movie.movie_slug}: ${result.status} (${result.provider_count} ${region} rows, ${result.country_count} countries)`,
+        );
         return result;
       });
     }
@@ -375,7 +560,7 @@ async function main() {
         moviesUpdated,
         error: runError?.message,
       },
-      dryRun
+      dryRun,
     ).catch(() => {});
 
     await sql.end({ timeout: 5 }).catch(() => {});
@@ -397,6 +582,7 @@ async function main() {
       succeeded: movieResults.filter((result) => result.status !== "error").length,
       errored: movieResults.filter((result) => result.status === "error").length,
       provider_rows: movieResults.reduce((count, result) => count + (result.provider_count || 0), 0),
+      jsonb_movies_written: movieResults.filter((result) => result.status !== "error" && result.country_count > 0).length,
     },
   };
   await writeJsonFile(reportPath, report);

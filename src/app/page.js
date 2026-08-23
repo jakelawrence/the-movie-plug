@@ -86,7 +86,7 @@ export default function HomePage() {
         </p>
         <div className="w-full flex justify-center mb-5">
           <div className="max-w-md sm:max-w-lg w-full">
-            <SearchBar />
+            <SearchBar scrollIntoViewOnFocus />
           </div>
         </div>
         <div className="flex justify-center">

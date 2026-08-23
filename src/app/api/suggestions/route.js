@@ -187,6 +187,7 @@ export async function POST(req) {
       // NEW: Filter parameters
       genres = [],
       vibes = [],
+      languages = [],
       duration = null,
       decade = null,
       minRating = 0,
@@ -244,6 +245,14 @@ export async function POST(req) {
         return genres.some((g) => movieGenres.includes(g.toLowerCase()));
       });
       console.log(`After genre filter (${genres.join(", ")}): ${recommendations.length} movies`);
+    }
+
+    // Language filter — original_language is a single ISO 639-1 code per film,
+    // so films missing it (no tmdb_id yet) drop out once a language is picked.
+    if (languages.length > 0) {
+      const wanted = new Set(languages.map((code) => String(code).toLowerCase()));
+      recommendations = recommendations.filter((m) => wanted.has(String(m.original_language || "").toLowerCase()));
+      console.log(`After language filter (${languages.join(", ")}): ${recommendations.length} movies`);
     }
 
     // Vibe filters
@@ -348,6 +357,7 @@ export async function POST(req) {
       filtersApplied: {
         genres: genres.length,
         vibes: vibes.length,
+        languages: languages.length,
         duration: !!duration,
         decade: !!decade,
         minRating: minRating > 0,

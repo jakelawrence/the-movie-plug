@@ -13,6 +13,7 @@
     "db:semantic-inventory": "node scripts/maintenance/semantic-search-inventory.mjs",
     "sync:providers": "node scripts/maintenance/sync-watch-providers.mjs",
     "sync:posters": "node scripts/maintenance/sync-tmdb-posters.mjs",
+    "sync:languages": "node scripts/maintenance/sync-tmdb-languages.mjs",
     "inventory:phase1": "node scripts/migration/phase-1-inventory.mjs --out docs/migration/phase-1-inventory.json --include-tmdb",
     "inventory:phase1:strict": "node scripts/migration/phase-1-inventory.mjs --out docs/migration/phase-1-inventory.json --include-tmdb --strict",
     "migrate:phase3:export": "node scripts/migration/phase-3-export-dynamodb.mjs",

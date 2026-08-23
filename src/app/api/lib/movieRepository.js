@@ -545,6 +545,22 @@ export async function getMovieCount() {
   return Number(rows[0]?.count || 0);
 }
 
+// Every original_language present in the catalog, most common first, so the
+// language filter reflects what is actually there instead of a hardcoded list.
+export async function getMovieLanguageFacets() {
+  const sql = getSql();
+  const rows = await sql`
+    select original_language as code, count(*)::int as count
+    from public.movies
+    where original_language is not null
+      and original_language <> ''
+    group by original_language
+    order by count desc, original_language asc
+  `;
+
+  return rows.map((row) => ({ code: row.code, count: Number(row.count) }));
+}
+
 export async function getEmbeddingRecommendations({
   seedSlug,
   limit = 250,

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback, useMemo, useId } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { SEARCH_FILTERS } from "../api/lib/search-filters";
+import { SEARCH_FILTERS, getLanguageLabel, normalizeLanguageCode } from "../api/lib/search-filters";
 import { Search, X, ChevronDown, ChevronUp, ChevronRight, Star, Bookmark, BookmarkCheck, SlidersHorizontal } from "lucide-react";
 import Loading from "../components/Loading";
 import { Navbar } from "../components/Navbar";
@@ -238,6 +238,60 @@ function Chip({ label, active, onClick, disabled = false }) {
   );
 }
 
+// ─── Language chips ───────────────────────────────────────────────────────────
+
+// The catalog spans ~40 languages but a handful account for nearly all of it, so
+// only the most common ones show up front and the long tail sits behind a toggle.
+const PRIMARY_LANGUAGE_COUNT = 12;
+
+function LanguageChips({ languages, active, onToggle, onClear }) {
+  const [showAll, setShowAll] = useState(false);
+
+  // An active language stays visible even when it sits in the tail — collapsing
+  // the list should never hide a filter that is currently narrowing results.
+  const visible = showAll ? languages : languages.filter((l, i) => i < PRIMARY_LANGUAGE_COUNT || active.includes(l.code));
+  const hiddenCount = languages.length - visible.length;
+
+  return (
+    <div>
+      <div className="flex flex-wrap gap-2">
+        {visible.map((l) => (
+          <Chip key={l.code} label={l.label} active={active.includes(l.code)} onClick={() => onToggle(l.code)} />
+        ))}
+      </div>
+
+      {(hiddenCount > 0 || showAll) && (
+        <button
+          onClick={() => setShowAll((o) => !o)}
+          type="button"
+          aria-expanded={showAll}
+          className="mt-3 font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack/70 hover:text-fadedBlack flex items-center gap-1 py-2 -my-1"
+        >
+          {showAll ? (
+            <>
+              <ChevronUp size={11} strokeWidth={2} /> Fewer languages
+            </>
+          ) : (
+            <>
+              <ChevronDown size={11} strokeWidth={2} /> {hiddenCount} more {hiddenCount === 1 ? "language" : "languages"}
+            </>
+          )}
+        </button>
+      )}
+
+      {active.length > 0 && (
+        <button
+          onClick={onClear}
+          type="button"
+          className="mt-3 font-dmSans text-[10px] uppercase tracking-[0.12em] text-fadedBlack/70 hover:text-fadedBlack flex items-center gap-1 py-2 -my-1"
+        >
+          <X size={10} strokeWidth={2} /> Clear languages
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ─── Section expander ─────────────────────────────────────────────────────────
 
 function FilterSection({ title, children, defaultOpen = true, count = 0 }) {
@@ -418,10 +472,15 @@ export default function DiscoverPage() {
   // Filters
   const [activeGenres, setActiveGenres] = useState([]);
   const [activeVibes, setActiveVibes] = useState([]);
+  const [activeLanguages, setActiveLanguages] = useState([]);
   const [activeDuration, setActiveDuration] = useState(null);
   const [activeDecade, setActiveDecade] = useState(null);
   const [minRating, setMinRating] = useState(0);
   const [filterStreamingOnly, setFilterStreamingOnly] = useState(false);
+
+  // Languages present in the catalog, most common first — fetched rather than
+  // hardcoded so the filter tracks the catalog as it grows.
+  const [availableLanguages, setAvailableLanguages] = useState([]);
 
   // Results
   const [results, setResults] = useState([]);
@@ -463,6 +522,28 @@ export default function DiscoverPage() {
       cancelled = true;
     };
   }, [user?.username]);
+
+  // Load the catalog's languages. Failure is non-fatal — the section just stays
+  // hidden rather than offering a filter we can't populate.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/movies/languages");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled || !Array.isArray(data.languages)) return;
+        setAvailableLanguages(
+          data.languages.map(({ code, count }) => ({ code, count, label: getLanguageLabel(code) })),
+        );
+      } catch (err) {
+        console.error("Failed to load languages:", err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const parseList = (value) =>
@@ -506,6 +587,25 @@ export default function DiscoverPage() {
     }
   }, [searchParams]);
 
+  // Languages arrive from the API, so their URL params are applied in a separate
+  // pass once that list lands. The ref keeps it to a single application — the
+  // effect must not re-assert URL state after the user has edited the filter.
+  const appliedLanguageParams = useRef(false);
+  useEffect(() => {
+    if (appliedLanguageParams.current || availableLanguages.length === 0) return;
+
+    const languagesParam = searchParams.get("languages") || searchParams.get("language");
+    appliedLanguageParams.current = true;
+    if (!languagesParam) return;
+
+    const allowed = new Set(availableLanguages.map((l) => l.code));
+    const nextLanguages = languagesParam
+      .split(/[|,]/)
+      .map((v) => normalizeLanguageCode(v))
+      .filter((code) => allowed.has(code));
+    if (nextLanguages.length) setActiveLanguages(nextLanguages);
+  }, [searchParams, availableLanguages]);
+
   // ── Helpers ────────────────────────────────────────────────────────────────
 
   const inputSlugs = useMemo(() => inputMovies.map((m) => m.slug), [inputMovies]);
@@ -518,10 +618,12 @@ export default function DiscoverPage() {
 
   const toggleGenre = (g) => setActiveGenres((p) => (p.includes(g) ? p.filter((x) => x !== g) : [...p, g]));
   const toggleVibe = (k) => setActiveVibes((p) => (p.includes(k) ? p.filter((x) => x !== k) : [...p, k]));
+  const toggleLanguage = (code) => setActiveLanguages((p) => (p.includes(code) ? p.filter((x) => x !== code) : [...p, code]));
 
   const activeFilterCount =
     activeGenres.length +
     activeVibes.length +
+    activeLanguages.length +
     (activeDuration ? 1 : 0) +
     (activeDecade ? 1 : 0) +
     (minRating > 0 ? 1 : 0) +
@@ -533,6 +635,7 @@ export default function DiscoverPage() {
       inputMovies.forEach((m) => params.append("movie", m.slug));
       if (activeGenres.length) params.set("genres", activeGenres.join("|"));
       if (activeVibes.length) params.set("vibes", activeVibes.join("|"));
+      if (activeLanguages.length) params.set("languages", activeLanguages.join("|"));
       if (activeDuration) params.set("duration", activeDuration);
       if (activeDecade) params.set("decade", activeDecade);
       if (minRating > 0) params.set("minRating", String(minRating));
@@ -577,6 +680,7 @@ export default function DiscoverPage() {
         // NEW: Pass filters to API
         genres: activeGenres,
         vibes: activeVibes,
+        languages: activeLanguages,
         duration: activeDuration,
         decade: activeDecade,
         minRating: minRating,
@@ -706,6 +810,18 @@ export default function DiscoverPage() {
           </button>
         )}
       </FilterSection>
+
+      {/* ── LANGUAGE ── */}
+      {availableLanguages.length > 0 && (
+        <FilterSection title="Language" defaultOpen={false} count={activeLanguages.length}>
+          <LanguageChips
+            languages={availableLanguages}
+            active={activeLanguages}
+            onToggle={toggleLanguage}
+            onClear={() => setActiveLanguages([])}
+          />
+        </FilterSection>
+      )}
 
       {/* ── VIBE ── */}
       <FilterSection title="Vibe" defaultOpen={false} count={activeVibes.length}>

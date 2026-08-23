@@ -8,7 +8,7 @@ import { SpinFilters } from "../components/spin/SpinFilters";
 import { SpinReel } from "../components/spin/SpinReel";
 import { SpinResult } from "../components/spin/SpinResult";
 import { MovieDetailsModal } from "@/app/components/MovieDetailsModal";
-import { applyFilters, collectGenres } from "@/app/lib/spinFilters";
+import { applyFilters, collectGenres, collectLanguages } from "@/app/lib/spinFilters";
 
 // ─── Spin — Random Movie Picker ──────────────────────────────────────────────
 // Phase 1: page scaffold, auth + empty states. Filters (Phase 2), the reel
@@ -23,7 +23,7 @@ export default function SpinPage() {
   const [error, setError] = useState(null);
 
   // Filter state — drives the candidate pool the wheel picks from.
-  const [filters, setFilters] = useState({ vibes: [], genres: [], ratingMin: 0, durationKeys: [], onlyMyServices: false });
+  const [filters, setFilters] = useState({ vibes: [], genres: [], languages: [], ratingMin: 0, durationKeys: [], onlyMyServices: false });
 
   // Spin state machine: "idle" → "spinning" → "result".
   const [phase, setPhase] = useState("idle");
@@ -45,13 +45,15 @@ export default function SpinPage() {
     }));
 
   const toggleGenre = (g) => toggleInArray("genres", g);
+  const toggleLanguage = (code) => toggleInArray("languages", code);
   const toggleVibe = (v) => toggleInArray("vibes", v);
   const toggleDuration = (d) => toggleInArray("durationKeys", d);
   const setRatingMin = (val) => setFilters((prev) => ({ ...prev, ratingMin: val }));
   const toggleOnlyMyServices = () => setFilters((prev) => ({ ...prev, onlyMyServices: !prev.onlyMyServices }));
-  const clearFilters = () => setFilters({ vibes: [], genres: [], ratingMin: 0, durationKeys: [], onlyMyServices: false });
+  const clearFilters = () => setFilters({ vibes: [], genres: [], languages: [], ratingMin: 0, durationKeys: [], onlyMyServices: false });
 
   const allGenres = useMemo(() => collectGenres(savedMovies), [savedMovies]);
+  const allLanguages = useMemo(() => collectLanguages(savedMovies), [savedMovies]);
   const candidatePool = useMemo(
     () => applyFilters(savedMovies, { ...filters, serviceIds: filters.onlyMyServices ? myServices : null }),
     [savedMovies, filters, myServices],
@@ -212,9 +214,11 @@ export default function SpinPage() {
             {/* ── Pre-spin filters ── */}
             <SpinFilters
               genres={allGenres}
+              languages={allLanguages}
               filters={filters}
               hasServices={myServices.length > 0}
               onToggleGenre={toggleGenre}
+              onToggleLanguage={toggleLanguage}
               onToggleVibe={toggleVibe}
               onToggleDuration={toggleDuration}
               onSetRatingMin={setRatingMin}

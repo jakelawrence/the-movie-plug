@@ -1,7 +1,7 @@
 // Shared, pure filter helpers used by the saved-movies page and the /spin page.
 // Keeping these in one place ensures the two surfaces filter identically.
 
-import { SEARCH_FILTERS } from "@/app/api/lib/search-filters";
+import { SEARCH_FILTERS, getLanguageLabel, normalizeLanguageCode } from "@/app/api/lib/search-filters";
 
 // Vibe filters use the numeric mood fields on each movie.
 export const VIBE_FILTERS = [
@@ -30,13 +30,17 @@ function matchesDuration(duration, durationKeys) {
   });
 }
 
-// Filter a list of movies by vibes, genres, minimum rating, runtime buckets, and
-// streaming services. All provided dimensions must match (AND); within
-// genres/durations/services, any selected value matches (OR). When serviceIds is
-// null/empty the streaming dimension is skipped — mirrors the server-side
-// filterByStreamingServices so /spin and search agree.
-export function applyFilters(movies, { vibes = [], genres = [], ratingMin = 0, durationKeys = [], serviceIds = null } = {}) {
+// Filter a list of movies by vibes, genres, languages, minimum rating, runtime
+// buckets, and streaming services. All provided dimensions must match (AND);
+// within genres/languages/durations/services, any selected value matches (OR).
+// When serviceIds is null/empty the streaming dimension is skipped — mirrors the
+// server-side filterByStreamingServices so /spin and search agree.
+export function applyFilters(
+  movies,
+  { vibes = [], genres = [], languages = [], ratingMin = 0, durationKeys = [], serviceIds = null } = {},
+) {
   const serviceIdSet = serviceIds && serviceIds.length > 0 ? new Set(serviceIds.map(Number)) : null;
+  const languageSet = languages.length > 0 ? new Set(languages.map(normalizeLanguageCode)) : null;
   return movies.filter((m) => {
     // Vibe filters (all selected must match)
     for (const key of vibes) {
@@ -53,6 +57,10 @@ export function applyFilters(movies, { vibes = [], genres = [], ratingMin = 0, d
       const hasGenre = genres.some((g) => movieGenres.map((mg) => mg.toLowerCase()).includes(g.toLowerCase()));
       if (!hasGenre) return false;
     }
+
+    // Language — a film carries one original_language code, so films still
+    // missing it drop out as soon as a language is selected.
+    if (languageSet && !languageSet.has(normalizeLanguageCode(m.original_language))) return false;
 
     // Min rating
     if (ratingMin > 0 && (m.averageRating ?? 0) < ratingMin) return false;
@@ -77,4 +85,19 @@ export function collectGenres(movies) {
     (m.genres || m.genreNames || []).forEach((g) => all.add(g));
   });
   return Array.from(all).sort();
+}
+
+// Collect the languages present across a list of movies as { code, label },
+// most common first, so /spin only offers languages that can actually win.
+export function collectLanguages(movies) {
+  const counts = new Map();
+  movies.forEach((m) => {
+    const code = normalizeLanguageCode(m.original_language);
+    if (!code) return;
+    counts.set(code, (counts.get(code) ?? 0) + 1);
+  });
+
+  return Array.from(counts.entries())
+    .map(([code, count]) => ({ code, count, label: getLanguageLabel(code) }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
 }

@@ -42,3 +42,39 @@ export const SEARCH_FILTERS = {
     { key: "classic", label: "Classic  pre‑1980", max: 1979 },
   ],
 };
+
+// Language filters key off movies.original_language, which TMDB fills with a
+// single ISO 639-1 code per film. Intl.DisplayNames covers nearly all of them,
+// so we only spell out the ones it gets wrong: TMDB deviates from the standard
+// by using "cn" for Cantonese (the standard has no code for it), which leaves
+// "zh" meaning Mandarin specifically.
+const LANGUAGE_LABEL_OVERRIDES = {
+  cn: "Cantonese",
+  zh: "Mandarin",
+  xx: "No Dialogue",
+};
+
+let languageDisplayNames = null;
+
+export function normalizeLanguageCode(code) {
+  return String(code || "")
+    .trim()
+    .toLowerCase();
+}
+
+export function getLanguageLabel(code) {
+  const normalized = normalizeLanguageCode(code);
+  if (!normalized) return "";
+  if (LANGUAGE_LABEL_OVERRIDES[normalized]) return LANGUAGE_LABEL_OVERRIDES[normalized];
+
+  try {
+    languageDisplayNames = languageDisplayNames || new Intl.DisplayNames(["en"], { type: "language" });
+    const label = languageDisplayNames.of(normalized);
+    // Intl echoes the code back when it has no data for it — fall through then.
+    if (label && label.toLowerCase() !== normalized) return label;
+  } catch {
+    // Structurally invalid code. Show it raw rather than crashing the filter.
+  }
+
+  return normalized.toUpperCase();
+}

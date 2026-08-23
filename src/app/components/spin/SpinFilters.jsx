@@ -42,9 +42,22 @@ function RatingStars({ min, setMin }) {
   );
 }
 
-export function SpinFilters({ genres, filters, hasServices, onToggleGenre, onToggleVibe, onToggleDuration, onSetRatingMin, onToggleOnlyMyServices, onClear }) {
-  const { vibes, genres: activeGenres, ratingMin, durationKeys, onlyMyServices } = filters;
-  const activeCount = vibes.length + activeGenres.length + durationKeys.length + (ratingMin > 0 ? 1 : 0) + (onlyMyServices ? 1 : 0);
+export function SpinFilters({
+  genres,
+  languages,
+  filters,
+  hasServices,
+  onToggleGenre,
+  onToggleLanguage,
+  onToggleVibe,
+  onToggleDuration,
+  onSetRatingMin,
+  onToggleOnlyMyServices,
+  onClear,
+}) {
+  const { vibes, genres: activeGenres, languages: activeLanguages, ratingMin, durationKeys, onlyMyServices } = filters;
+  const activeCount =
+    vibes.length + activeGenres.length + activeLanguages.length + durationKeys.length + (ratingMin > 0 ? 1 : 0) + (onlyMyServices ? 1 : 0);
 
   return (
     <div className="bg-background border border-fadedBlack/10 p-5 space-y-5">
@@ -55,6 +68,18 @@ export function SpinFilters({ genres, filters, hasServices, onToggleGenre, onTog
           <div className="flex flex-wrap gap-2">
             {genres.map((g) => (
               <Chip key={g} label={g} active={activeGenres.includes(g)} onClick={() => onToggleGenre(g)} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Language — only worth showing once the pool spans more than one */}
+      {languages.length > 1 && (
+        <div>
+          <p className="font-dmSans text-[9px] text-fadedBlack/70 uppercase tracking-[0.22em] mb-3">Language</p>
+          <div className="flex flex-wrap gap-2">
+            {languages.map((l) => (
+              <Chip key={l.code} label={l.label} active={activeLanguages.includes(l.code)} onClick={() => onToggleLanguage(l.code)} />
             ))}
           </div>
         </div>

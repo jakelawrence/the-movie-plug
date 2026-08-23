@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { RemoveScroll } from "react-remove-scroll";
-import { X, Bookmark, BookmarkCheck } from "lucide-react";
+import { X, Bookmark, BookmarkCheck, ArrowRight } from "lucide-react";
 
 // A labelled grid of streaming-provider logos. Shared between the "your services"
 // and "also available" groups so both render identically.
@@ -34,7 +34,20 @@ function ProviderGroup({ label, providers }) {
   );
 }
 
-export function MovieDetailsModal({ movie, onClose, onToggleSave, isSaved, canSave, myServiceIds = [] }) {
+// `onExplore` is optional on purpose: /discover and /spin render this component
+// too and must show no explore action. Only /search passes it.
+export function MovieDetailsModal({ movie, onClose, onToggleSave, isSaved, canSave, myServiceIds = [], onExplore }) {
+  // Escape closes. Declared above the early return so the hook order is stable,
+  // and no-ops while closed so there's no stray listener on the document.
+  useEffect(() => {
+    if (!movie) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose?.();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [movie, onClose]);
+
   if (!movie) return null;
 
   // Show every streaming site the movie is available on. The data layer already
@@ -53,11 +66,11 @@ export function MovieDetailsModal({ movie, onClose, onToggleSave, isSaved, canSa
   return (
     <RemoveScroll>
       <div
-        className="fixed inset-0 bg-fadedBlack/50 flex items-end sm:items-center justify-center z-50 backdrop-blur-sm cursor-pointer"
+        className="fixed inset-0 bg-fadedBlack/50 flex items-end sm:items-center justify-center z-[300] backdrop-blur-sm cursor-pointer sm:p-6"
         onClick={onClose}
       >
         <div
-          className="bg-background w-full sm:max-w-lg sm:mx-4 max-h-[88dvh] flex flex-col border-t sm:border border-fadedBlack/10 animate-slide-up"
+          className="bg-background w-full sm:max-w-lg max-h-[88dvh] sm:max-h-full flex flex-col border-t sm:border border-fadedBlack/10 animate-slide-up"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Fixed header — always on-screen, never scrolls away */}
@@ -193,6 +206,16 @@ export function MovieDetailsModal({ movie, onClose, onToggleSave, isSaved, canSa
               <p className="font-dmSans text-fadedBlack/40 text-[10px] uppercase tracking-wide text-center">
                 Sign in to save movies.
               </p>
+            )}
+
+            {onExplore && (
+              <button
+                onClick={onExplore}
+                className="w-full py-3.5 font-dmSans text-[10px] uppercase tracking-[0.12em] bg-background text-fadedBlack border border-fadedBlack/15 hover:bg-backgroundSecondary transition-colors flex items-center justify-center gap-2"
+              >
+                Explore This Film
+                <ArrowRight size={14} strokeWidth={2} />
+              </button>
             )}
           </div>
         </div>
