@@ -39,10 +39,6 @@ Options:
   --catalog-only        Only refresh watch_providers catalog
   --skip-catalog        Do not refresh watch_providers catalog before movies
   --dry-run             Fetch and report without writing to Postgres
-  --explain             Print how each movie's providers were derived, ending
-                        with the list the app will actually render. Pair with
-                        --movie-slugs (or a small --limit) — it is ~1 screen
-                        per movie. Combines well with --dry-run
   --report PATH         Write a JSON report. Defaults to docs/migration/phase-3-watch-provider-sync-report.json
   --help                Show this help
 `);
@@ -268,108 +264,6 @@ function buildWatchProvidersJson(body) {
   return Object.keys(countries).length > 0 ? countries : null;
 }
 
-// Mirrors movieRepository.flattenWatchProviders: the app de-duplicates by
-// providerId and keeps the FIRST bucket a provider appears in, walking the
-// buckets in WATCH_AVAILABILITY_TYPES order. That is why a title you can both
-// rent and buy shows up once, tagged "rent". Also records the buckets that lost
-// so --explain can show what was folded away.
-//
-// Kept in sync by hand with the app's WATCH_PROVIDER_BUCKETS — if that order
-// changes and this does not, --explain will confidently describe the wrong UI.
-function flattenForDisplay(countryPayload) {
-  const winners = new Map();
-  const alsoIn = new Map();
-
-  for (const availabilityType of WATCH_AVAILABILITY_TYPES) {
-    const list = Array.isArray(countryPayload?.[availabilityType]) ? countryPayload[availabilityType] : [];
-    for (const provider of list) {
-      if (provider?.providerId == null) continue;
-
-      if (winners.has(provider.providerId)) {
-        alsoIn.get(provider.providerId).push(availabilityType);
-        continue;
-      }
-
-      winners.set(provider.providerId, { ...provider, type: availabilityType });
-      alsoIn.set(provider.providerId, []);
-    }
-  }
-
-  return Array.from(winners.values()).map((provider) => ({
-    ...provider,
-    alsoIn: alsoIn.get(provider.providerId),
-  }));
-}
-
-function formatProviderRow(provider) {
-  const id = String(provider.providerId).padStart(5);
-  const name = (provider.providerName ?? "(unnamed)").padEnd(32).slice(0, 32);
-  return { id, name };
-}
-
-// Built as one string and logged in a single call: with --concurrency > 1 the
-// per-movie blocks would otherwise interleave into nonsense.
-function explainMovie(movie, region, availability, dryRun) {
-  const lines = [];
-  const watchProviders = availability.watch_providers;
-  const countries = watchProviders ? Object.keys(watchProviders) : [];
-  const countryPayload = watchProviders?.[region] ?? null;
-  const verb = dryRun ? "would write" : "wrote";
-
-  lines.push("─".repeat(78));
-  lines.push(`${movie.movie_slug}  (tmdb ${movie.tmdb_id}, region ${region})`);
-  lines.push(`  TMDB returned availability in ${countries.length} countries`);
-
-  if (!countryPayload) {
-    lines.push(`  No ${region} entry in the response — status "${availability.status}".`);
-    lines.push(
-      countries.length === 0
-        ? `  ${verb} movies.watch_providers = JSON null (TMDB has no availability for this film anywhere), and 0 ${region} rows.`
-        : `  ${verb} movies.watch_providers with the ${countries.length} non-${region} countries, and 0 ${region} rows.`,
-    );
-    lines.push(`  The app will show no providers here, because it only reads watch_providers['${region}'].`);
-    lines.push("");
-    return lines.map((line) => line.trimEnd()).join("\n");
-  }
-
-  lines.push(`  ${region} link: ${countryPayload.link ?? "(none)"}`);
-  lines.push("");
-  lines.push(`  Step 1 — ${region} buckets exactly as TMDB grouped them:`);
-
-  let bucketTotal = 0;
-  for (const availabilityType of WATCH_AVAILABILITY_TYPES) {
-    const list = countryPayload[availabilityType];
-    if (!Array.isArray(list) || list.length === 0) continue;
-
-    bucketTotal += list.length;
-    for (const provider of list) {
-      const { id, name } = formatProviderRow(provider);
-      lines.push(`    ${availabilityType.padEnd(9)} ${id}  ${name}  priority ${provider.displayPriority ?? "—"}`);
-    }
-  }
-
-  const flattened = flattenForDisplay(countryPayload);
-  lines.push("");
-  lines.push("  Step 2 — what the app renders, after de-duplicating by provider:");
-
-  for (const provider of flattened) {
-    const { id, name } = formatProviderRow(provider);
-    const folded = provider.alsoIn.length > 0 ? `  <- also offered as ${provider.alsoIn.join(", ")}` : "";
-    lines.push(`    ${provider.type.padEnd(9)} ${id}  ${name}${folded}`);
-  }
-
-  const foldedCount = bucketTotal - flattened.length;
-  lines.push(
-    `  ${flattened.length} provider${flattened.length === 1 ? "" : "s"} shown` +
-      (foldedCount > 0 ? `, ${foldedCount} duplicate listing${foldedCount === 1 ? "" : "s"} folded into a higher bucket` : ""),
-  );
-  lines.push("");
-  lines.push(`  ${verb}: movies.watch_providers = ${countries.length} countries, movie_watch_providers = ${availability.rows.length} ${region} rows`);
-  lines.push("");
-
-  return lines.map((line) => line.trimEnd()).join("\n");
-}
-
 async function updateErrorState(sql, movie, region, error, dryRun) {
   if (dryRun) return;
 
@@ -435,7 +329,7 @@ async function replaceMovieAvailability(sql, movie, region, availability, dryRun
   });
 }
 
-async function refreshMovie(sql, movie, region, { dryRun, explain }) {
+async function refreshMovie(sql, movie, region, dryRun) {
   try {
     const body = await fetchMovieAvailability(movie.tmdb_id);
     const fetchedAt = nowIso();
@@ -445,10 +339,8 @@ async function refreshMovie(sql, movie, region, { dryRun, explain }) {
       watch_providers: watchProviders,
       fetched_at: fetchedAt,
     };
-
-    if (explain) {
-      console.log(explainMovie(movie, region, availability, dryRun));
-    }
+    //print watch providers for debugging
+    console.log(`availability for ${movie.movie_slug}: is ${availability.wa}`);
 
     await replaceMovieAvailability(sql, movie, region, availability, dryRun);
 
@@ -510,7 +402,6 @@ async function main() {
   const catalogOnly = hasArg("--catalog-only");
   const skipCatalog = hasArg("--skip-catalog");
   const dryRun = hasArg("--dry-run");
-  const explain = hasArg("--explain");
   const reportPath = getArg("--report", "docs/migration/phase-3-watch-provider-sync-report.json");
 
   const sql = createSql();
@@ -539,7 +430,7 @@ async function main() {
 
       runId = await startRun(sql, region, dryRun);
       movieResults = await mapWithConcurrency(movies, concurrency, async (movie, index) => {
-        const result = await refreshMovie(sql, movie, region, { dryRun, explain });
+        const result = await refreshMovie(sql, movie, region, dryRun);
         console.log(
           `  ${index + 1}/${movies.length} ${movie.movie_slug}: ${result.status} (${result.provider_count} ${region} rows, ${result.country_count} countries)`,
         );
